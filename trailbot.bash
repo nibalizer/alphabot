@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# will be adapted to #afk
+# mangled from bdbot for #afk
 #
 
 line=""
@@ -17,7 +17,7 @@ tail -f botfile | nc irc.cat.pdx.edu 6667 | while true ; do
     if [ -z $started ] ; then
         echo "USER trailbot 0 trailbot :imma bot" > botfile
         echo "NICK trailbot" >> botfile
-        echo "JOIN #robots catsonly" >> botfile
+        echo "JOIN #afk" >> botfile
         started="yes"
     fi
     read irc
@@ -38,19 +38,22 @@ tail -f botfile | nc irc.cat.pdx.edu 6667 | while true ; do
 
     case $cmd in
         "@add")
-	    line="$args $line"
+	    line=`echo "$args $line" | sed -e 's/\(.*\)./\1/'`
 	    echo "$line" >> $trips
-	    echo "PRIVMSG $chan :'$line' added" >> botfile
+	    echo "PRIVMSG $chan :\"$line\" added" >> botfile
+	    line=""
 	    ;;
         "@remove")
-	    line="$args $line"
+	    line=`echo "$args $line" | sed -e 's/\(.*\)./\1/'`
 	    remove=`grep "$line" $trips`
+	    echo $remove
 	    if [ -z "$remove" ] ; then
 		echo "PRIVMSG $chan :No matching trips" >> botfile
 	    else
-		sed '/$remove/d' "$trips"
-		echo "PRIVMSG $chan :'$line' removed" >> botfile
+		sed -i /"$line"/d "$trips"
+		echo "PRIVMSG $chan :\"$line\" removed" >> botfile
 	    fi
+	    line=""
 	    ;;
 	"@list")
 	    if [ ! -s "$trips" ] ; then
@@ -66,4 +69,3 @@ tail -f botfile | nc irc.cat.pdx.edu 6667 | while true ; do
 	    ;;
    esac
 done
-
