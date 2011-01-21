@@ -7,8 +7,9 @@ line=""
 fline=""
 started=""
 remove=""
+#fromtest=""
 trips="trail.log"
-help="all commands start with '@': (add | remove | list | help)"
+help="add | remove (be specific) | list | help"
 
 rm botfile
 mkfifo botfile
@@ -67,5 +68,10 @@ tail -f botfile | nc irc.cat.pdx.edu 6667 | while true ; do
 	"@help") 
 	    echo "PRIVMSG $chan :$help" >> botfile
 	    ;;
+	#"@test")
+	 #   line=`echo "$args $line" | sed -e 's/\(.*\)./\1/'`
+	  #  fromtest > `./test.bash $line`
+      	   # echo "PRIVMSG $chan :$fromtest received in test.bash" >> botfile
+	    #;;
    esac
 done
