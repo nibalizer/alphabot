@@ -3,22 +3,20 @@
 # mangled from bdbot for #afk
 #
 
-line=""
-fline=""
 started=""
-remove=""
-#fromtest=""
 trips="trail.log"
-help="add | remove (be specific) | list | help"
+help="help.txt"
+
+socat="socat - openssl:irc.cat.pdx.edu:6697,verify=0"
 
 rm botfile
 mkfifo botfile
 
-tail -f botfile | nc irc.cat.pdx.edu 6667 | while true ; do
+tail -f botfile | $socat | while true ; do
     if [ -z $started ] ; then
-        echo "USER trailbot 0 trailbot :imma bot" > botfile
-        echo "NICK trailbot" >> botfile
-        echo "JOIN #afk" >> botfile
+        echo "USER trailbot_ 0 trailbot_ :imma bot_" > botfile
+        echo "NICK trailbot_" >> botfile
+        echo "JOIN #trailbot" >> botfile
         started="yes"
     fi
     read irc
@@ -30,48 +28,62 @@ tail -f botfile | nc irc.cat.pdx.edu 6667 | while true ; do
     barf=`echo $irc | cut -d ' ' -f 1-3`
     cmd=`echo ${irc##$barf :}|cut -d ' ' -f 1|tr -d "\r\n"`
     args=`echo ${irc##$barf :$cmd}|tr -d "\r\n"`
-    nick="${irc%%!*}";nick="${nick#:}"
+
+
+    echo "PRIVMSG $chan :$irc"
+    echo "PRIVMSG $chan :$chan"
+    echo "PRIVMSG $chan :$barf"
+    echo "PRIVMSG $chan :$cmd"
+    echo "PRIVMSG $chan :$args"
+
+    nick="${irc%%!*}"
+    
+    echo "PRIVMSG $chan :$nick"
+
+    nick="${nick#:}"
+
+    echo "PRIVMSG $chan :$nick"
 
     if [ ! -e "$trips" ] ; then
-	echo "PRIVMSG $chan :No log found, making new one" >> botfile
+	echo "PRIVMSG $chan :no log found, creating new log" >> botfile
         touch "$trips";
+    fi
+
+    if [ "${cmd%[:,]}" == "trailbot_" ] ; then
+        echo "PRIVMSG $chan :don't talk to me, use '@'" >> botfile
     fi
 
     case $cmd in
         "@add")
-	    line=`echo "$args $line" | sed -e 's/\(.*\)./\1/'`
-	    echo "$line" >> $trips
-	    echo "PRIVMSG $chan :\"$line\" added" >> botfile
-	    line=""
-	    ;;
+	        echo "$args" >> $trips
+	        echo "PRIVMSG $chan :\"$args\" added" >> botfile
+	        ;;
         "@remove")
-	    line=`echo "$args $line" | sed -e 's/\(.*\)./\1/'`
-	    remove=`grep "$line" $trips`
-	    echo $remove
-	    if [ -z "$remove" ] ; then
-		echo "PRIVMSG $chan :No matching trips" >> botfile
-	    else
-		sed -i /"$line"/d "$trips"
-		echo "PRIVMSG $chan :\"$line\" removed" >> botfile
-	    fi
-	    line=""
-	    ;;
-	"@list")
-	    if [ ! -s "$trips" ] ; then
-		echo "PRIVMSG $chan :No trips found in log" >> botfile
-	    fi
-	    while read fline
-	    do
-		echo "PRIVMSG $chan :$fline" >> botfile 
-	    done < "$trips"
-	    ;;
-	"@help") 
-	    echo "PRIVMSG $chan :$help" >> botfile
-	    ;;
-	#"@test")
-	 #   line=`echo "$args $line" | sed -e 's/\(.*\)./\1/'`
-	  #  fromtest > `./test.bash $line`
-      	   # echo "PRIVMSG $chan :$fromtest received in test.bash" >> botfile
-	    #;;
+	        remove=`grep -i "$args" $trips`
+	        if [ -z "$remove" ] ; then
+		        echo "PRIVMSG $chan :no matching trips" >> botfile
+	        else
+		        sed -i '' /"$args"/d "$trips"
+		        echo "PRIVMSG $chan :\"$remove\" removed" >> botfile
+	        fi
+	        ;;
+	    "@list")
+	        if [ ! -s "$trips" ] ; then
+		        echo "PRIVMSG $chan :no trips found in log" >> botfile
+	        fi
+	        while read fline
+	        do
+		        echo "PRIVMSG $chan :$fline" >> botfile 
+	        done < "$trips"
+	        ;;
+	    "@help") 
+	        if [ ! -s "$help" ] ; then
+                echo "PRIVMSG $chan :no help docs found" >> botfile
+            fi
+            while read fline
+            do
+                echo "PRIVMSG $chan :$fline" >> botfile
+            done < "$help"
+            ;;
    esac
 done
