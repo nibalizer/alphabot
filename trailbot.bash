@@ -14,8 +14,8 @@ mkfifo botfile
 
 tail -f botfile | $socat | while true ; do
     if [ -z $started ] ; then
-        echo "USER trailbot_ 0 trailbot_ :imma bot_" > botfile
-        echo "NICK trailbot_" >> botfile
+        echo "USER trailbot 0 trailbot :imma bot" > botfile
+        echo "NICK trailbot" >> botfile
         echo "JOIN #trailbot" >> botfile
         started="yes"
     fi
@@ -28,21 +28,7 @@ tail -f botfile | $socat | while true ; do
     barf=`echo $irc | cut -d ' ' -f 1-3`
     cmd=`echo ${irc##$barf :}|cut -d ' ' -f 1|tr -d "\r\n"`
     args=`echo ${irc##$barf :$cmd}|tr -d "\r\n"`
-
-
-    echo "PRIVMSG $chan :$irc"
-    echo "PRIVMSG $chan :$chan"
-    echo "PRIVMSG $chan :$barf"
-    echo "PRIVMSG $chan :$cmd"
-    echo "PRIVMSG $chan :$args"
-
-    nick="${irc%%!*}"
-    
-    echo "PRIVMSG $chan :$nick"
-
-    nick="${nick#:}"
-
-    echo "PRIVMSG $chan :$nick"
+    nick="${irc%%!*}"; nick="${nick#:}"
 
     if [ ! -e "$trips" ] ; then
 	echo "PRIVMSG $chan :no log found, creating new log" >> botfile
