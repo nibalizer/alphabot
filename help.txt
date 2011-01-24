@@ -1,0 +1,2 @@
+CMDS: @add <description> | @remove <keyword> | @list | @help
+TODO: @edit | @spam | @map | check @remove if multiple match
