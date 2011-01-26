@@ -35,7 +35,7 @@ tail -f botfile | $socat | while true ; do
         touch "$trips";
     fi
 
-    if [ "${cmd%[:,]}" == "trailbot_" ] ; then
+    if [ "${cmd%[:,]}" == "trailbot" ] ; then
         echo "PRIVMSG $chan :don't talk to me, use '@'" >> botfile
     fi
 
