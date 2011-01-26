@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # should receive args in this order:
-# $cmd, $args, $chan
+# $cmd, $args
 #
 # multiline delimiter is '~'
 
@@ -11,7 +11,6 @@ help="help.txt"
 
 cmd="$1"
 args="$2"
-chan="$3"
 
 case $cmd in
     "@add")

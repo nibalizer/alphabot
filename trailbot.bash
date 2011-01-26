@@ -43,7 +43,7 @@ tail -f botfile | $socat | while true ; do
 
     case $cmd in
         @*)
-            fromcmds="$(./cmds.bash "$cmd" "$args" "$chan")"
+            fromcmds="$(./cmds.bash "$cmd" "$args")"
             if [ "~" == "${fromcmds:0:1}" ] ; then
                 lines=`echo $fromcmds | tr "~" "\n"`
                 
