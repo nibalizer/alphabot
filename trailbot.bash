@@ -14,9 +14,9 @@ mkfifo botfile
 
 tail -f botfile | $socat | while true ; do
     if [ -z $started ] ; then
-        echo "USER trailbot 0 trailbot :imma bot" > botfile
+        echo "USER trailbot 0 trailbot :trailbot" > botfile
         echo "NICK trailbot" >> botfile
-        echo "JOIN #trailbot" >> botfile
+        echo "JOIN #afk" >> botfile
         started="yes"
     fi
     read irc
@@ -49,7 +49,7 @@ tail -f botfile | $socat | while true ; do
 	        if [ -z "$remove" ] ; then
 		        echo "PRIVMSG $chan :no matching trips" >> botfile
 	        else
-		        sed -i '' /"$args"/d "$trips"
+		        sed -i '' /"$args"/d "$trips"    #remove '' on non-mac
 		        echo "PRIVMSG $chan :\"$remove\" removed" >> botfile
 	        fi
 	        ;;
@@ -62,7 +62,7 @@ tail -f botfile | $socat | while true ; do
 		        echo "PRIVMSG $chan :$fline" >> botfile 
 	        done < "$trips"
 	        ;;
-	    "@help") 
+	    @*) 
 	        if [ ! -s "$help" ] ; then
                 echo "PRIVMSG $chan :no help docs found" >> botfile
             fi
