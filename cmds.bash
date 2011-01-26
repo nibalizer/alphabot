@@ -3,6 +3,8 @@
 # should receive args in this order:
 # $cmd, $args, $chan
 #
+# multiline delimiter is '~'
+
 
 trips="trail.log"
 help="help.txt"
@@ -21,7 +23,7 @@ case $cmd in
         if [ -z "$remove" ] ; then
 	        echo "no matching trips"
 	    else
-  	        sed -i '' /"$args"/d "$trips"    #remove '' on non-mac
+  	        sed -i /"$args"/d "$trips"
 	        echo "\"$remove\" removed"
 	    fi
         ;;
@@ -29,18 +31,24 @@ case $cmd in
 	    if [ ! -s "$trips" ] ; then
 		    echo "no trips found in log"
         fi
-	    while read fline
+
+        multiline=""
+        while read fline
 	    do
-  	        echo "$fline"
+  	        multiline="$multiline~$fline"
 	    done < "$trips"
+        echo "$multiline"
 	    ;;
     @*) 
         if [ ! -s "$help" ] ; then
             echo "no help docs found"
         fi
+        
+        multiline=""
         while read fline
         do
-            echo "$fline";
+            multiline="$multiline~$fline"
         done < "$help"
+        echo "$multiline"
         ;;
 esac

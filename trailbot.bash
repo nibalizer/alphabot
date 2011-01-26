@@ -2,6 +2,7 @@
 #
 # mangled from bdbot for #afk
 #
+# said mangling achieved by d-_-b, aka stutterbug
 
 started=""
 trips="trail.log"
@@ -28,48 +29,34 @@ tail -f botfile | $socat | while true ; do
     barf=`echo $irc | cut -d ' ' -f 1-3`
     cmd=`echo ${irc##$barf :}|cut -d ' ' -f 1|tr -d "\r\n"`
     args=`echo ${irc##$barf :$cmd}|tr -d "\r\n"`
-    nick="${irc%%!*}"; nick="${nick#:}"
+    nick="${irc%%!*}";nick="${nick#:}"
 
     if [ ! -e "$trips" ] ; then
-	echo "PRIVMSG $chan :no log found, creating new log" >> botfile
+	echo "PRIVMSG $chan :No log found, making new one" >> botfile
         touch "$trips";
     fi
+
 
     if [ "${cmd%[:,]}" == "trailbot" ] ; then
         echo "PRIVMSG $chan :don't talk to me, use '@'" >> botfile
     fi
 
     case $cmd in
-        "@add")
-	        echo "$args" >> $trips
-	        echo "PRIVMSG $chan :\"$args\" added" >> botfile
-	        ;;
-        "@remove")
-	        remove=`grep -i "$args" $trips`
-	        if [ -z "$remove" ] ; then
-		        echo "PRIVMSG $chan :no matching trips" >> botfile
-	        else
-		        sed -i '' /"$args"/d "$trips"    #remove '' on non-mac
-		        echo "PRIVMSG $chan :\"$remove\" removed" >> botfile
-	        fi
-	        ;;
-	    "@list")
-	        if [ ! -s "$trips" ] ; then
-		        echo "PRIVMSG $chan :no trips found in log" >> botfile
-	        fi
-	        while read fline
-	        do
-		        echo "PRIVMSG $chan :$fline" >> botfile 
-	        done < "$trips"
-	        ;;
-	    @*) 
-	        if [ ! -s "$help" ] ; then
-                echo "PRIVMSG $chan :no help docs found" >> botfile
+        @*)
+            fromcmds="$(./cmds.bash "$cmd" "$args" "$chan")"
+            if [ "~" == "${fromcmds:0:1}" ] ; then
+                lines=`echo $fromcmds | tr "~" "\n"`
+                
+                oldifs=$IFS
+                IFS=$(echo -en "\n\b")
+                
+                for line in $lines ; do
+                    echo "PRIVMSG $chan :$line" >> botfile
+                done
+                IFS=$oldifs
+            else
+                echo "PRIVMSG $chan :$fromcmds" >> botfile
             fi
-            while read fline
-            do
-                echo "PRIVMSG $chan :$fline" >> botfile
-            done < "$help"
             ;;
-   esac
+    esac
 done
