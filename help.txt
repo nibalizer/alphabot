@@ -1,2 +1,13 @@
-CMDS: @add <description> | @complete <keyword> | @remove <keyword> | @past | @list | @source | @help
-TODO: @edit | @spam | @map | check @remove if multiple match
+commands currently include:
+@add <description>  - stores in current trips
+@complete <keyword> - moves match to past trips
+@remove <keyword>   - removes match from all logs
+@past		    - list completed trips  
+@list               - list planned trips
+@source             - view link to source
+@help               - view this info again
+todo (please suggest more to d-_-b):
+@edit   - possibly have two (noob and direct sed)
+@spam   - pull all nicks in channel for highlights
+@map    - return google maps link for search terms
+@remove - play nicer with sed and multiple matches

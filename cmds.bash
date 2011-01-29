@@ -13,6 +13,25 @@ help="help.txt"
 cmd="$1"
 args="$2"
 
+multiline_reply () {
+    file="$1"
+
+    if [ ! -s "$file" ] ; then
+	if [ "$file" == "$help" ] ; then
+	    echo "no help found"
+	else
+            echo "no trips found"
+	fi
+    else
+        multiline=""
+        while read fline
+        do
+            multiline="$multiline~$fline"
+	done < "$file"
+        echo "$multiline"
+    fi
+}
+
 case $cmd in
     "@add")
         echo "$args" >> $trips
@@ -44,42 +63,16 @@ case $cmd in
         fi
         ;;
     "@past")
-	if [ ! -s "$past" ] ; then
-	    echo "no past trips found"
-	else
-	    multiline=""
-	    while read fline
-	    do
-  	        multiline="$multiline~$fline"
-	    done < "$past"
-            echo "$multiline"
-	fi
+	multiline_reply $past
 	;;
     "@list")
-        if [ ! -s "$trips" ] ; then
-	    echo "no trips found in log"
-        fi
-
-        multiline=""
-        while read fline
-	    do
-  	        multiline="$multiline~$fline"
-	    done < "$trips"
-        echo "$multiline"
-	    ;;
+	multiline_reply $trips
+        ;;
     "@source")
 	echo "see https://github.com/stutterbug/trailbot"
 	;;
     @*) 
-        if [ ! -s "$help" ] ; then
-            echo "no help docs found"
-        fi
-        
-        multiline=""
-        while read fline
-        do
-            multiline="$multiline~$fline"
-        done < "$help"
-        echo "$multiline"
+	multiline_reply $help
         ;;
 esac
+

@@ -32,7 +32,6 @@ tail -f botfile | $socat | while true ; do
     nick="${irc%%!*}";nick="${nick#:}"
 
     if [ ! -e "$trips" ] ; then
-	echo "PRIVMSG $chan :No log found, making new one" >> botfile
         touch "$trips";
     fi
 
