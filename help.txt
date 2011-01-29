@@ -1,2 +1,2 @@
-CMDS: @add <description> | @complete <keyword> | @remove <keyword> | @past | @list | @help
+CMDS: @add <description> | @complete <keyword> | @remove <keyword> | @past | @list | @source | @help
 TODO: @edit | @spam | @map | check @remove if multiple match

@@ -67,6 +67,9 @@ case $cmd in
 	    done < "$trips"
         echo "$multiline"
 	    ;;
+    "@source")
+	echo "see https://github.com/stutterbug/trailbot"
+	;;
     @*) 
         if [ ! -s "$help" ] ; then
             echo "no help docs found"
