@@ -8,11 +8,49 @@
 
 trips="trail.log"
 past="past.log"
-help="@add, @comp, @remove, @past, @list, @source, @help, @vhelp (full help and todo)"
-vhelp="help.txt"
+help="@add, @comp, @remove, @past, @list, @source, @todo, @help [command]"
+todo="todo.txt"
 
 cmd="$1"
 args="$2"
+farg=`echo $args | cut -d ' ' -f 1`
+rargs=`echo ${args##$farg}`
+
+help_helper () {
+    if [ -z $farg ] ; then
+        echo "$help"
+    else
+        case $farg in
+            "add")
+                echo "@add <description> - stores in current trips"
+                ;;
+            "comp")
+                echo "@comp <keyword> - moves match to past trips"
+                ;;
+            "remove")
+                echo "@remove <keyword> - removes match from all logs"
+                ;;
+            "past")
+                echo "@past - list completed trips"
+                ;;
+            "list")
+                echo "@list - list planned trips"
+                ;;
+            "source")
+                echo "@source - view link to source"
+                ;;
+            "todo")
+                echo "@todo - shows current (growing) list of future features"
+                ;;
+            "help")
+                echo "really?"
+                ;;
+            *)
+                echo "command isn't implemented"
+                ;;
+        esac
+    fi
+}
 
 multiline_reply () {
     file="$1"
@@ -72,8 +110,11 @@ case $cmd in
     "@source")
 	    echo "see https://github.com/stutterbug/trailbot"
 	    ;;
-    "@vhelp") 
-	    multiline_reply $vhelp
+    "@todo")
+        multiline_reply $todo
+        ;;
+    "@help")
+        help_helper
         ;;
     @*) 
 	    echo "$help"
