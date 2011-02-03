@@ -8,7 +8,7 @@
 
 trips="trail.log"
 past="past.log"
-help="@add, @comp, @remove, @past, @list, @source, @todo, @help [command]"
+help="@add, @comp, @remove, @edit, @past, @list, @source, @todo, @help [command]"
 todo="todo.txt"
 
 cmd="$1"
@@ -84,7 +84,7 @@ case $cmd in
         if [ -z "$comp" ] ; then
 	        echo "no matching trips"
         else
-            sed -i '' /"$args"/d "$trips"
+            sed -i /"$args"/d "$trips"
             echo "$comp" >> $past
             echo "\"$comp\" is done"
 	    fi
@@ -96,11 +96,11 @@ case $cmd in
 	    if [ -z "$rmpast" ] ; then
 		    echo "no matching trips"
 	    else
-		    sed -i '' /"$args"/d "$past"	
+		    sed -i /"$args"/d "$past"	
 		    echo "\"$rmpast\" removed from logs"
 	    fi
         else
-            sed -i '' /"$args"/d "$trips"
+            sed -i /"$args"/d "$trips"
             echo "\"$remove\" removed from list"
         fi
         ;;
@@ -109,7 +109,7 @@ case $cmd in
         if [ -z "$toedit" ] ; then
 	        echo "no matching trips"
         else
-            sed -i '' /"$toedit"/d "$trips"
+            sed -i /"$toedit"/d "$trips"
             toedit=`echo $toedit | sed -e "$rargs"`
             echo "entry is now \"$toedit\""
             echo "$toedit" >> $trips
