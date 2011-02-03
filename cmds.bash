@@ -22,13 +22,16 @@ help_helper () {
     else
         case $farg in
             "add")
-                echo "@add <description> - stores in current trips"
+                echo "@add <description> - store in current trips"
                 ;;
             "comp")
-                echo "@comp <keyword> - moves match to past trips"
+                echo "@comp <keyword> - move match to past trips"
                 ;;
             "remove")
-                echo "@remove <keyword> - removes match from all logs"
+                echo "@remove <keyword> - remove match from all logs"
+                ;;
+            "edit")
+                echo "@edit <keyword> s/<old>/<new>/ - edit <old> to <new> in match"
                 ;;
             "past")
                 echo "@past - list completed trips"
@@ -40,7 +43,7 @@ help_helper () {
                 echo "@source - view link to source"
                 ;;
             "todo")
-                echo "@todo - shows current (growing) list of future features"
+                echo "@todo - show current (growing) list of future features"
                 ;;
             "help")
                 echo "really?"
@@ -81,24 +84,35 @@ case $cmd in
         if [ -z "$comp" ] ; then
 	        echo "no matching trips"
         else
-            sed -i /"$args"/d "$trips"
+            sed -i '' /"$args"/d "$trips"
+            echo "$comp" >> $past
             echo "\"$comp\" is done"
-	    echo "$comp" >> $past
-        fi
+	    fi
         ;;
     "@remove")
 	    remove=`grep -i "$args" $trips`
 	    rmpast=`grep -i "$args" $past`
         if [ -z "$remove" ] ; then
 	    if [ -z "$rmpast" ] ; then
-		echo "no matching trips"
+		    echo "no matching trips"
 	    else
-		sed -i /"$args"/d "$past"		
-		echo "\"$rmpast\" removed from logs"
+		    sed -i '' /"$args"/d "$past"	
+		    echo "\"$rmpast\" removed from logs"
 	    fi
         else
-            sed -i /"$args"/d "$trips"
+            sed -i '' /"$args"/d "$trips"
             echo "\"$remove\" removed from list"
+        fi
+        ;;
+    "@edit")
+        toedit=`grep -i "$farg" $trips`
+        if [ -z "$toedit" ] ; then
+	        echo "no matching trips"
+        else
+            sed -i '' /"$toedit"/d "$trips"
+            toedit=`echo $toedit | sed -e "$rargs"`
+            echo "entry is now \"$toedit\""
+            echo "$toedit" >> $trips
         fi
         ;;
     "@past")
