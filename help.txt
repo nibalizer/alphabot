@@ -1,13 +1,17 @@
 commands currently include:
-@add <description>  - stores in current trips
+@add <description> - stores in current trips
 @complete <keyword> - moves match to past trips
-@remove <keyword>   - removes match from all logs
-@past		    - list completed trips  
-@list               - list planned trips
-@source             - view link to source
-@help               - view this info again
+@remove <keyword> - removes match from all logs
+@past - list completed trips  
+@list - list planned trips
+@source - view link to source
+@help - show shortened list of commands
+@vhelp - show this info again
 todo (please suggest more to d-_-b):
-@edit   - possibly have two (noob and direct sed)
-@spam   - pull all nicks in channel for highlights
-@map    - return google maps link for search terms
+@edit - possibly have two (noob and direct sed)
+@spam - pull all nicks in channel for highlights
+@map - return google maps link for search terms
 @remove - play nicer with sed and multiple matches
+@geohash - do something like http://xkcd.com/426/
+@list - add sorting to displayed trips based on date
+@list - add option for num of trips displayed, or all

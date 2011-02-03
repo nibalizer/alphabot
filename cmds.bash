@@ -8,7 +8,8 @@
 
 trips="trail.log"
 past="past.log"
-help="help.txt"
+help="@add, @comp, @remove, @past, @list, @source, @help, @vhelp (full help and todo)"
+vhelp="help.txt"
 
 cmd="$1"
 args="$2"
@@ -37,8 +38,8 @@ case $cmd in
         echo "$args" >> $trips
         echo "\"$args\" added"
         ;;
-    "@complete")
-	comp=`grep -i "$args" $trips`
+    "@comp")
+	    comp=`grep -i "$args" $trips`
         if [ -z "$comp" ] ; then
 	        echo "no matching trips"
         else
@@ -48,8 +49,8 @@ case $cmd in
         fi
         ;;
     "@remove")
-	remove=`grep -i "$args" $trips`
-	rmpast=`grep -i "$args" $past`
+	    remove=`grep -i "$args" $trips`
+	    rmpast=`grep -i "$args" $past`
         if [ -z "$remove" ] ; then
 	    if [ -z "$rmpast" ] ; then
 		echo "no matching trips"
@@ -63,16 +64,18 @@ case $cmd in
         fi
         ;;
     "@past")
-	multiline_reply $past
-	;;
+	    multiline_reply $past
+	    ;;
     "@list")
-	multiline_reply $trips
+	    multiline_reply $trips
         ;;
     "@source")
-	echo "see https://github.com/stutterbug/trailbot"
-	;;
+	    echo "see https://github.com/stutterbug/trailbot"
+	    ;;
+    "@vhelp") 
+	    multiline_reply $vhelp
+        ;;
     @*) 
-	multiline_reply $help
+	    echo "$help"
         ;;
 esac
-
