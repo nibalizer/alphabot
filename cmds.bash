@@ -9,7 +9,7 @@
 trips="trail.log"
 past="past.log"
 temp="temp.log"
-help="@add, @comp, @remove, @edit, @past, @list, @sort, @source, @todo, @help [command]"
+help="@add, @comp, @remove, @edit, @past [num|all], @list [num|all], @sort, @source, @todo [num|all], @help [command]"
 todo="todo.txt"
 
 cmd="$1"
@@ -37,19 +37,16 @@ help_helper () {
                 echo "@edit <keyword> s/<old>/<new>/ - edit <old> to <new> in match"
                 ;;
             "past")
-                echo "@past - list completed trips"
+                echo "@past [num|all] - list completed trips, default is $defaultstop"
                 ;;
             "list")
-                echo "@list - list planned trips"
-                ;;
-            "sort")
-                echo "@sort - sorts trips by date, with those missing dates at the end"
+                echo "@list [num|all] - list planned trips, default is $defaultstop"
                 ;;
             "source")
                 echo "@source - view link to source"
                 ;;
             "todo")
-                echo "@todo - show current (growing) list of future features"
+                echo "@todo [num|all] - show current (growing) list of future features, default is $defaultstop"
                 ;;
             "help")
                 echo "really?"
@@ -59,38 +56,6 @@ help_helper () {
                 ;;
         esac
     fi
-}
-
-list_sort () {
-    while read fline
-    do
-        linecheck=`echo $fline | grep [0-9]/[0-9]`
-        if [ -z "$linecheck" ] ; then
-            echo "$fline" >> $temp
-        else
-            while read line
-            do
-                insertmonth=`echo $linecheck | grep -Eo [0-9]?[0-9]/ | tr -d '/'`
-                insertday=`echo $linecheck | grep -Eo /[0-9]?[0-9] | tr -d '/'`
-                linemonth=`echo $line | grep -Eo [0-9]?[0-9]/ | tr -d '/'`
-                lineday=`echo $line | grep -Eo /[0-9]?[0-9] | tr -d '/'`
-
-                echo "$insertmonth"
-
-                if [ "$insertmonth" -lt "$linemonth" ] ; then
-                    sed /"$line"/i\ "$linecheck" "$temp"
-                fi
-
-                if [ "$insertmonth" -eq "$linemonth" ] ; then
-                    if [ "$insertday" -le "$lineday" ] ; then
-                        sed /"$line"/i\ "$linecheck" "$temp"
-                    fi
-                fi
-            done < "$temp"
-        fi
-    done < "$trips"
-    # mv temp.log trail.log
-    # sed -i '' /^$/d $trips
 }
 
 multiline_reply () {
@@ -171,12 +136,6 @@ case $cmd in
 	    ;;
     "@list")
 	    multiline_reply $trips
-        ;;
-    "@sort")
-        touch "$temp"
-        list_sort
-        multiline_reply $temp
-        rm "$temp"
         ;;
     "@source")
 	    echo "see https://github.com/stutterbug/trailbot"
