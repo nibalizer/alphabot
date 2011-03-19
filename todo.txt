@@ -1,5 +1,0 @@
-current todo (please suggest more to d-_-b):
-@spam - pull all nicks in channel for highlights
-@map - return google maps link for search terms
-@geohash - do something like http://xkcd.com/426/
-@list - add sorting to displayed trips based on date
