@@ -8,15 +8,13 @@
 
 trips="trail.log"
 past="past.log"
-temp="temp.log"
-help="@add, @comp, @remove, @edit, @past [num|all], @list [num|all], @sort, @source, @todo [num|all], @help [command]"
+help="@add, @comp, @remove, @edit, @past [num|all], @list [num|all], @source, @todo [num|all], @help [command]"
 todo="todo.txt"
 
 cmd="$1"
 args="$2"
 farg=`echo $args | cut -d ' ' -f 1`
 rargs=`echo ${args##$farg}`
-
 defaultstop=1
 
 help_helper () {
@@ -50,7 +48,7 @@ help_helper () {
                 ;;
             "help")
                 echo "really?"
-                ;;
+               ;;
             *)
                 echo "command isn't implemented"
                 ;;
@@ -94,16 +92,18 @@ case $cmd in
     "@add")
         echo "$args" >> $trips
         echo "\"$args\" added"
+#        ./tripsort.pl "$trips"
         ;;
     "@comp")
 	    comp=`grep -m 1 -i "$args" $trips`
         if [ -z "$comp" ] ; then
 	        echo "no matching trips"
         else
-            sed -i '' /"$args"/d "$trips"
+            sed -i /"$comp"/d "$trips"
             echo "$comp" >> $past
             echo "\"$comp\" is done"
 	    fi
+#        ./tripsort.pl "$past"
         ;;
     "@remove")
 	    remove=`grep -m 1 -i "$args" $trips`
@@ -112,11 +112,11 @@ case $cmd in
 	        if [ -z "$rmpast" ] ; then
 		        echo "no matching trips"
 	        else
-		        sed -i '' /"$rmpast"/d "$past"	
+		        sed -i /"$rmpast"/d "$past"	
 		        echo "\"$rmpast\" removed from logs"
 	        fi
         else
-            sed -i '' /"$remove"/d "$trips"
+            sed -i /"$remove"/d "$trips"
             echo "\"$remove\" removed from list"
         fi
         ;;
@@ -125,7 +125,7 @@ case $cmd in
         if [ -z "$toedit" ] ; then
 	        echo "no matching trips"
         else
-            sed -i '' /"$toedit"/d "$trips"
+            sed -i /"$toedit"/d "$trips"
             toedit=`echo $toedit | sed -e "$rargs"`
             echo "entry is now \"$toedit\""
             echo "$toedit" >> $trips
