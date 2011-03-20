@@ -27,7 +27,7 @@ class TrailBot(irc.IRCClient):
         else:
             line = cmds.dispatch(user, channel, msg)
 
-        irc.IRCClient.msg(self, channel, mesg)
+        irc.IRCClient.msg(self, channel, line)
 
 class TrailBotFactory(protocol.ClientFactory):
     protocol = TrailBot
