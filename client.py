@@ -19,15 +19,20 @@ class TrailBot(irc.IRCClient):
         self.join(self.factory.channel)
 
     def privmsg(self, user, channel, msg):
-        line = ''
+        # need to figure out pm
+        where = ''
 
         if msg == '@reload':
             rebuild.rebuild(cmds)
-            line = 'cmds updated'
+            irc.IRCClient.msg(self, channel, 'cmds updated')
         else:
-            line = cmds.dispatch(user, channel, msg)
-
-        irc.IRCClient.msg(self, channel, line)
+            reply = cmds.dispatch(user, channel, msg, where)
+            if len(reply) != 1:
+                for t in reply:
+                    irc.IRCClient.msg(self, channel, t)
+            else:
+                line = ''.join(reply[:1])
+                irc.IRCClient.msg(self, channel, line) 
 
 class TrailBotFactory(protocol.ClientFactory):
     protocol = TrailBot

@@ -1,41 +1,58 @@
 #!/usr/bin/env python
 
-import os
+import os, re
 
 cmdlist = ['add', 'remove', 'help', 'list', 'source']
 log = './trip.log'
+context = None
 file = None
 
-def add(msg):
-    line = ' '.join(msg.rsplit()[1:])
-    file.write(line + '\n')
-    return 'added ' + '"' + line + '"'
-
-def remove(msg):
-    return 'in remove'
-
-def help(msg):
-    return 'work in progress, doing add, list, source. working on remove and others.'
-
-def list():
+def getcontents():
     if file.tell():
         file.seek(0, 0)
 
     lines = file.readlines()
     lines = [l[:-1] for l in lines]
+    return lines
 
-    return ' | '.join(lines)
+def add(args):
+    file.write(line + '\n')
+    return ['added ' + '"' + line + '"']
+
+def remove(args):
+    result = []
+    trips = getcontents()
+    match = filter(lambda e: args in e, trips)
+    
+    if len(match) == 0:
+        result.append('no matching trips found')
+    else:
+        result.extend(match[:1])
+
+    return result
+
+def help(args):
+    return ['work in progress, doing add, list, source. working on remove and others.']
+
+def list():
+    tolist = getcontents()
+    # use context for listing all in pm
+
+    return tolist
 
 def source():
-    return 'source available at https://github.com/stutterbug/trailbot'
+    return ['source available at https://github.com/stutterbug/trailbot']
 
-def dispatch(user, channel, msg):
-    line = ''
+def dispatch(user, channel, msg, where):
+    reply = []
+    global context
     global file
+    context = where
 
     if msg[0] == '@':
         msg = msg[1:]
         cmd = msg.rsplit()[0]
+        args = ' '.join(msg.rsplit()[1:])
 
         if os.path.exists(log):
             file = open(log, 'a+')
@@ -43,15 +60,15 @@ def dispatch(user, channel, msg):
             file = open(log, 'w+')
 
         if cmd not in cmdlist:
-            line = 'command not implemented'
+            reply.append('command not implemented')
         elif cmd in cmdlist[:3]:
-            line = globals()[cmd](msg)
+            reply.extend(globals()[cmd](args))
         elif cmd in cmdlist[3:]:
-            line = globals()[cmd]()
+            reply.extend(globals()[cmd]())
 
         file.close()
 
     elif msg.startswith('trailbot'):
-        line = 'prefix commands with "@"'
+        reply.append('prefix commands with "@"')
 
-    return line
+    return reply
