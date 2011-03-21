@@ -2,17 +2,19 @@
 
 import os, re, fileinput as fi
 
-cmdlist = ['add', 'remove', 'edit', 'help', 'list', 'source']
+cmdlist = ['add', 'remove', 'edit', 'comp', 'help', 'list', 'past','source']
+magicnumber = 5
 log = './trip.log'
+pastlog = './past.log'
 testlog = './test.log'
-past = './past.log'
+testpastlog = './testpast.log'
 file = None
 
-def getcontents():
-    if file.tell():
-        file.seek(0, 0)
+def getcontents(f):
+    if f.tell():
+        f.seek(0, 0)
 
-    lines = file.readlines()
+    lines = f.readlines()
     lines = [l[:-1] for l in lines]
     return lines
 
@@ -21,38 +23,52 @@ def add(args):
     return 'added "' + args + '"'
 
 def remove(args):
-    result = ''
-    trips = getcontents()
+    response = ''
+    trips = getcontents(file)
+
+    if args == '':
+        return response
+
     match = filter(lambda e: args in e, trips)
 
     if len(match) == 0:
-        result = 'no matching trips found'
+        response = 'no matching trips found'
     else:
         todel = match[0] + '\n'
         for line in fi.input(file.name, inplace=1):
             if line != todel: 
                 print line,
-        result = 'removed "' + match[0] + '"'
+        response = 'removed "' + match[0] + '"'
                 
-    return result
+    return response
 
 def edit(args):
-    result = ''
-    trips = getcontents()
+    response = ''
+    trips = getcontents(file)
+    cmdindex = 0
 
-    search = args.rsplit()[0]
-    command = ' '.join(args.rsplit()[1:])
+    if args == '':
+        return response
+
+    args = args.rsplit()
+    for e in args:
+        if 's/' in e:
+            cmdindex = args.index(e)
+            break
+
+    search = ' '.join(args[:cmdindex])
+    command = ' '.join(args[cmdindex:])
 
     form = re.search(r'^s/.*/.*/$', command)
     if not form:
-        result = 'edit commands need the form: trip s/old/new/'
+        response = 'edit commands need the form: <keys> <s/old/new/>'
     else:
         old = command.split('/')[1]
         new = command.split('/')[2]
         match = filter(lambda e: search in e, trips)
         
         if len(match) == 0:
-            result = 'no matching trips found'
+            response = 'no matching trips found'
         else:
             toedit = match[0] + '\n'
             edited = ''
@@ -63,21 +79,81 @@ def edit(args):
                 else:
                     print line,
 
-            result = 'changed "' + match[0] + '" to "' + edited[:-1] + '"'
+            response = 'changed "' + match[0] + '" to "' + edited[:-1] + '"'
                 
-    return result    
+    return response    
+
+def comp(args):
+    response = ''
+    trips = getcontents(file)
+
+    if args == '':
+        return response
+
+    match = filter(lambda e: args in e, trips)
+
+    if len(match) == 0:
+        response = 'no matching trips found'
+    else:
+        tocomp = match[0] + '\n'
+        for line in fi.input(file.name, inplace=1):
+            if line == tocomp:
+                if file.name == testlog:
+                    plog = open(testpastlog, 'a+')
+                else:
+                    plog = open(pastlog, 'a+')
+                plog.write(tocomp)
+                plog.close()
+            else:
+                print line,
+        response = 'completed "' + match[0] + '"'
+
+    return response
 
 def help(args):
-    return 'good: add, remove, edit, list, source, help | soon: comp, past, sorting, better help'
+    response = ''
+
+    if args == '':
+        response = 'add | remove | comp | edit | list | past | source | help [command]'
+    elif not args in cmdlist:
+        response = 'command not implemented'
+    else:
+        if args == 'add':
+            response = 'add <trip>: adds the trip to list'
+        elif args == 'remove':
+            response = 'remove <keys>: removes trip containing <keys> from list. note that <keys> can be multiple words.'
+        elif args == 'comp':
+            response = 'comp <keys>: moves trip containing <keys> from list to past. note that <keys> can be multiple words.'
+        elif args == 'edit':
+            response = 'edit <keys> <s/old/new/>: changes old to new in trip containing <keys>. note that <keys> can be multiple words.'
+        elif args == 'list':
+            response = 'list: lists current trip ideas'
+        elif args == 'past':
+            response = 'past: lists completed trips'
+        elif args == 'source':
+            response = 'source: gives link to source for trailbot'
+
+    return response
 
 def list():
-    tolist = getcontents()
+    tolist = getcontents(file)
     
     if len(tolist) > 0:
         first = 'the next trip is "' + tolist[0] + '", sending the full list in a pm'
         tolist.insert(0, first)
 
     return tolist
+
+def past():
+    if file.name == testlog:
+        p = open(testpastlog, 'a+')
+    else:
+        p = open(pastlog, 'a+')
+    done = getcontents(p)
+    p.close()
+    
+    done.insert(0, 'sending past trips list in pm')
+    return done
 
 def source():
     return 'source available at https://github.com/stutterbug/trailbot'
@@ -107,9 +183,9 @@ def dispatch(user, channel, msg):
 
         if cmd not in cmdlist:
             reply = 'command not implemented'
-        elif cmd in cmdlist[:4]:
+        elif cmd in cmdlist[:magicnumber]:
             reply = globals()[cmd](args)
-        elif cmd in cmdlist[4:]:
+        elif cmd in cmdlist[magicnumber:]:
             reply = globals()[cmd]()
 
         file.close()
