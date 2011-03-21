@@ -5,6 +5,7 @@ from twisted.words.protocols import irc
 from twisted.internet import protocol, ssl
 from twisted.python import rebuild
 
+import types
 import cmds
 
 class TrailBot(irc.IRCClient):
@@ -16,29 +17,34 @@ class TrailBot(irc.IRCClient):
         irc.IRCClient.connectionMade(self)
 
     def signedOn(self):
-        self.join(self.factory.channel)
+        for chan in self.factory.channels:
+            self.join(chan)
+
+    def userKicked(self, kickee, channel, kicker, message):
+        self.msg(channel, 'damn...')
 
     def privmsg(self, user, channel, msg):
-        # need to figure out pm
-        where = ''
+        user = user.split('!',1)[0]
 
         if msg == '@reload':
             rebuild.rebuild(cmds)
-            irc.IRCClient.msg(self, channel, 'cmds updated')
+            self.msg(channel, 'cmds updated')
         else:
-            reply = cmds.dispatch(user, channel, msg, where)
-            if len(reply) != 1:
-                for t in reply:
-                    irc.IRCClient.msg(self, channel, t)
+            reply = cmds.dispatch(user, channel, msg)
+
+            if type(reply) is types.StringType:
+                self.msg(channel, reply) 
             else:
-                line = ''.join(reply[:1])
-                irc.IRCClient.msg(self, channel, line) 
+                if len(reply) > 0:
+                    self.msg(channel, reply[0])
+                    for trip in reply[1:]:
+                        self.msg(user, trip)                
 
 class TrailBotFactory(protocol.ClientFactory):
     protocol = TrailBot
 
-    def __init__(self, channel, nickname):
-        self.channel = channel
+    def __init__(self, channels, nickname):
+        self.channels = channels
         self.nickname = nickname
 
     def clientConnectionLost(self, connector, reason):

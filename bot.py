@@ -9,11 +9,11 @@ class Bot:
     def __init__(self):
         self.host = 'irc.cat.pdx.edu'
         self.port = 6697
-        self.chan = 'trailbot'
-        self.nick = 'trailbot2'
+        self.chan = ['#afk', '#trailbot']
+        self.nick = 'trailbot'
         
     def start(self):
-        reactor.connectSSL(self.host, self.port, TrailBotFactory('#'+self.chan,self.nick), TrailBotContextFactory())
+        reactor.connectSSL(self.host, self.port, TrailBotFactory(self.chan, self.nick), TrailBotContextFactory())
         reactor.run()
 
 def main():
