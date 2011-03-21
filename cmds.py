@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, re
+import os, re, fileinput as fi
 
 cmdlist = ['add', 'remove', 'help', 'list', 'source']
 log = './trip.log'
@@ -16,19 +16,23 @@ def getcontents():
     return lines
 
 def add(args):
-    file.write(line + '\n')
-    return ['added ' + '"' + line + '"']
+    file.write(args + '\n')
+    return ['added ' + '"' + args + '"']
 
 def remove(args):
     result = []
     trips = getcontents()
     match = filter(lambda e: args in e, trips)
-    
+
     if len(match) == 0:
         result.append('no matching trips found')
     else:
-        result.extend(match[:1])
-
+        todel = match[0] + '\n'
+        for line in fi.input(log, inplace=1):
+            if line != todel: 
+                print line,
+        result.append('removed ' + '"' + match[0] + '"')
+                
     return result
 
 def help(args):
