@@ -4,6 +4,8 @@ import os, fileinput as fi
 
 cmdlist = ['add', 'remove', 'help', 'list', 'source']
 log = './trip.log'
+testlog = './test.log'
+past = './past.log'
 file = None
 
 def getcontents():
@@ -58,10 +60,19 @@ def dispatch(user, channel, msg):
         cmd = msg.rsplit()[0]
         args = ' '.join(msg.rsplit()[1:])
 
-        if os.path.exists(log):
-            file = open(log, 'a+')
+        if cmd == 'test':
+            cmd = msg.rsplit()[1]
+            args = ' '.join(msg.rsplit()[2:])
+
+            if os.path.exists(testlog):
+                file = open(testlog, 'a+')
+            else:
+                file = open(testlog, 'w+')
         else:
-            file = open(log, 'w+')
+            if os.path.exists(log):
+                file = open(log, 'a+')
+            else:
+                file = open(log, 'w+')
 
         if cmd not in cmdlist:
             reply = 'command not implemented'
