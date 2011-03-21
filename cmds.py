@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import os, fileinput as fi
+import os, re, fileinput as fi
 
-cmdlist = ['add', 'remove', 'help', 'list', 'source']
+cmdlist = ['add', 'remove', 'edit', 'help', 'list', 'source']
 log = './trip.log'
 testlog = './test.log'
 past = './past.log'
@@ -29,15 +29,46 @@ def remove(args):
         result = 'no matching trips found'
     else:
         todel = match[0] + '\n'
-        for line in fi.input(log, inplace=1):
+        for line in fi.input(file.name, inplace=1):
             if line != todel: 
                 print line,
         result = 'removed "' + match[0] + '"'
                 
     return result
 
+def edit(args):
+    result = ''
+    trips = getcontents()
+
+    search = args.rsplit()[0]
+    command = ' '.join(args.rsplit()[1:])
+
+    form = re.search(r'^s/.*/.*/$', command)
+    if not form:
+        result = 'edit commands need the form: trip s/old/new/'
+    else:
+        old = command.split('/')[1]
+        new = command.split('/')[2]
+        match = filter(lambda e: search in e, trips)
+        
+        if len(match) == 0:
+            result = 'no matching trips found'
+        else:
+            toedit = match[0] + '\n'
+            edited = ''
+            for line in fi.input(file.name, inplace=1):
+                if line == toedit:
+                    edited = line.replace(old, new, 1)
+                    print edited,
+                else:
+                    print line,
+
+            result = 'changed "' + match[0] + '" to "' + edited[:-1] + '"'
+                
+    return result    
+
 def help(args):
-    return 'good: add, remove, list, source, help | soon: edit, comp, past, sorting, better help'
+    return 'good: add, remove, edit, list, source, help | soon: comp, past, sorting, better help'
 
 def list():
     tolist = getcontents()
@@ -76,9 +107,9 @@ def dispatch(user, channel, msg):
 
         if cmd not in cmdlist:
             reply = 'command not implemented'
-        elif cmd in cmdlist[:3]:
+        elif cmd in cmdlist[:4]:
             reply = globals()[cmd](args)
-        elif cmd in cmdlist[3:]:
+        elif cmd in cmdlist[4:]:
             reply = globals()[cmd]()
 
         file.close()
