@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from dateutil import parser
 import os, re, fileinput as fi
 
 cmdlist = ['add', 'remove', 'edit', 'comp', 'help', 'list', 'past','source']
@@ -18,7 +19,34 @@ def getcontents(f):
     lines = [l[:-1] for l in lines]
     return lines
 
+def sorttrips(list):
+    dated = []
+    undated = []
+    sortdict = {}
+
+    for e in list:
+        if re.search(r'(^|\s)[0-9][0-9]?/[0-9][0-9]?($|\s)', e):
+            dated.append(e)
+        else:
+            undated.append(e)
+
+    dates = [parser.parse(x, fuzzy=True) for x in dated]
+
+    for x in range(len(dates)):
+        sortdict[dates[x]] = dated[x]
+
+    dsort = sortdict.keys()
+    print dsort
+    dsort.sort(key = lambda x: x.timetuple()[1:3])
+    print dsort
+    dated = [sortdict[x] for x in dsort]
+
+    return dated + undated
+
 def add(args):
+    if args == '':
+        return ''
+
     file.write(args + '\n')
     return 'added "' + args + '"'
 
@@ -127,7 +155,7 @@ def help(args):
         elif args == 'edit':
             response = 'edit <keys> <s/old/new/>: changes old to new in trip containing <keys>. note that <keys> can be multiple words.'
         elif args == 'list':
-            response = 'list: lists current trip ideas'
+            response = 'list: lists current trip ideas. the listing is sorted by date, with trips missing dates at the end'
         elif args == 'past':
             response = 'past: lists completed trips'
         elif args == 'source':
@@ -137,7 +165,8 @@ def help(args):
 
 def list():
     tolist = getcontents(file)
-    
+    tolist = sorttrips(tolist)
+
     if len(tolist) > 0:
         first = 'the next trip is "' + tolist[0] + '", sending the full list in a pm'
         tolist.insert(0, first)
