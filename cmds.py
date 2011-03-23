@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+#
+# ABQIAAAAAX65p8doZAZ2sD27O8hGxRRsaZwSbRsXRPeXpEJl89c2a4Dt3xTCoPsHXlv4iZnwZLg2C929GudycQ
 
 from dateutil import parser
 import os, re, fileinput as fi
@@ -36,9 +38,7 @@ def sorttrips(list):
         sortdict[dates[x]] = dated[x]
 
     dsort = sortdict.keys()
-    print dsort
     dsort.sort(key = lambda x: x.timetuple()[1:3])
-    print dsort
     dated = [sortdict[x] for x in dsort]
 
     return dated + undated
@@ -199,16 +199,9 @@ def dispatch(user, channel, msg):
         if cmd == 'test':
             cmd = msg.rsplit()[1]
             args = ' '.join(msg.rsplit()[2:])
-
-            if os.path.exists(testlog):
-                file = open(testlog, 'a+')
-            else:
-                file = open(testlog, 'w+')
+            file = open(testlog, 'a+')
         else:
-            if os.path.exists(log):
-                file = open(log, 'a+')
-            else:
-                file = open(log, 'w+')
+            file = open(log, 'a+')
 
         if cmd not in cmdlist:
             reply = 'command not implemented'
