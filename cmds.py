@@ -22,6 +22,7 @@ def getcontents(f):
     return lines
 
 def sorttrips(list):
+    # not working
     dated = []
     undated = []
     sortdict = {}
@@ -92,8 +93,14 @@ def edit(args):
     if not form:
         response = 'edit commands need the form: <keys> <s/old/new/>'
     else:
-        old = command.split('/')[1]
-        new = command.split('/')[2]
+        old = re.split(r'(?<!\\)/', command)[1]
+        new = re.split(r'(?<!\\)/', command)[2]
+
+        if '\/' in old:
+            old = old.replace('\/', '/')
+        if '\/' in new:
+            new = new.replace('\/', '/')
+
         match = filter(lambda e: search in e, trips)
         
         if len(match) == 0:
@@ -256,11 +263,11 @@ def help(args):
         if args == 'add':
             response = 'add <trip>: adds the trip to list'
         elif args == 'remove':
-            response = 'remove <keys>: removes trip containing <keys> from list. note that <keys> can be multiple words.'
+            response = 'remove <keys>: removes trip containing <keys> from list.'
         elif args == 'comp':
-            response = 'comp <keys>: moves trip containing <keys> from list to past. note that <keys> can be multiple words.'
+            response = 'comp <keys>: moves trip containing <keys> from list to past.'
         elif args == 'edit':
-            response = 'edit <keys> <s/old/new/>: changes old to new in trip containing <keys>. note that <keys> can be multiple words.'
+            response = 'edit <keys> <s/old/new/>: changes old to new in trip containing <keys>. remember to escape "/" by using "\/" if they occur in old or new.'
         elif args == 'attending':
             response = 'attending <keys>: adds your nick to the attending list for the trip containing <keys>'
         elif args == 'missing':
