@@ -115,7 +115,6 @@ def edit(args):
 
 
 def attending(args):
-    # figure out damn logic
     response = ''
     trips = getcontents(file)
     if len(args) > 1:
@@ -132,7 +131,6 @@ def attending(args):
     else:
         hasatt = True
         attindex = 0
-        newmatch = []
         match = match[0].rsplit()
         for e in match:
             if '|attending|' in e:
@@ -140,26 +138,23 @@ def attending(args):
 
         if attindex == 0:
             hasatt = False
-            newmatch = match + ['|attending|']
-            attindex = newmatch.index('|attending|')
 
-        if user in newmatch[attindex:]:
+        if hasatt and user in match[attindex:]:
             response = 'appreciate the enthusiasm, but you already said you would go' 
         else:
             match = ' '.join(match)
-            newmatch = ' '.join(newmatch)
             toattend = match + '\n'
-            newtoattend = newmatch + '\n'
             attending = ''
 
             fil = fi.FileInput(file.name, inplace=1)
             for line in fil:
-                if line == newtoattend:
-                    attending = line[:-1] + ' ' + user + '\n'
-                    print attending,
-                elif line == toattend:
-                    attending = line[:-1] + ' |attending| ' + user + '\n'
-                    print attending,
+                if line == toattend:
+                    if hasatt:
+                        attending = line[:-1] + ' ' + user + '\n'
+                        print attending,
+                    else:
+                        attending = line[:-1] + ' |attending| ' + user + '\n'
+                        print attending,
                 else:
                     print line,
             fil.close()
@@ -168,7 +163,6 @@ def attending(args):
     return response
 
 def missing(args):
-    # need to mirror attending after it works
     response = ''
     trips = getcontents(file)
     if len(args) > 1:
@@ -183,6 +177,7 @@ def missing(args):
     if len(match) == 0:
         response = 'no matching trips found'
     else:
+        hasatt = True
         attindex = 0
         match = match[0].rsplit()
         for e in match:
@@ -190,11 +185,10 @@ def missing(args):
                 attindex = match.index(e)
 
         if attindex == 0:
-            match.append('|attending|')
-            attindex = match.index('|attending|')
+            hasatt = False
 
-        if user not in match[attindex+1:]:
-            response = "i don't recall you attending in the first place" 
+        if not hasatt and user not in match[attindex:]:
+            response = 'appreciate the enthusiasm, but you already said you would go' 
         else:
             match = ' '.join(match)
             tomiss = match + '\n'
@@ -205,8 +199,9 @@ def missing(args):
                 if line == tomiss:
                     tempstart = line.rsplit('|attending|')[0]
                     tempfinish = line.rsplit('|attending|')[1]
+
                     # more cases to look at
-                    missing = tempstart + ' |attending| ' + tempfinish.replace(user + ' ', '', 1)
+                    missing = tempstart + '|attending|' + tempfinish.replace(user + ' ', '', 1)
                     print missing,
                 else:
                     print line,
