@@ -187,8 +187,10 @@ def missing(args):
         if attindex == 0:
             hasatt = False
 
-        if not hasatt and user not in match[attindex:]:
-            response = 'appreciate the enthusiasm, but you already said you would go' 
+        if not hasatt:
+            response = "no one is going yet" 
+        elif user not in match[attindex:]:
+            response = "you aren't attending yet" 
         else:
             match = ' '.join(match)
             tomiss = match + '\n'
@@ -197,12 +199,16 @@ def missing(args):
             fil = fi.FileInput(file.name, inplace=1)
             for line in fil:
                 if line == tomiss:
-                    tempstart = line.rsplit('|attending|')[0]
-                    tempfinish = line.rsplit('|attending|')[1]
+                    start = line.rsplit('|attending|')[0]
+                    finish = line.rsplit('|attending|')[1].rsplit()
 
-                    # more cases to look at
-                    missing = tempstart + '|attending|' + tempfinish.replace(user + ' ', '', 1)
-                    print missing,
+                    if len(finish) == 1:
+                        missing = start[:-1] + '\n'
+                        print missing,
+                    else:
+                        finish.remove(user)
+                        missing = start + '|attending| ' + ' '.join(finish) + '\n'
+                        print missing,
                 else:
                     print line,
             fil.close()
@@ -243,7 +249,7 @@ def help(args):
     response = ''
 
     if args == '':
-        response = 'add | remove | comp | edit | list | past | source | help [command]'
+        response = 'add | remove | comp | edit | attending | missing | list | past | source | help [command]'
     elif not args in cmdlist:
         response = 'command not implemented'
     else:
@@ -255,6 +261,10 @@ def help(args):
             response = 'comp <keys>: moves trip containing <keys> from list to past. note that <keys> can be multiple words.'
         elif args == 'edit':
             response = 'edit <keys> <s/old/new/>: changes old to new in trip containing <keys>. note that <keys> can be multiple words.'
+        elif args == 'attending':
+            response = 'attending <keys>: adds your nick to the attending list for the trip containing <keys>'
+        elif args == 'missing':
+            response = 'missing <keys>: removes your nick from the attending list for the trip containing <keys>'
         elif args == 'list':
             response = 'list: lists current trip ideas. the listing is sorted by date, with trips missing dates at the end'
         elif args == 'past':
