@@ -5,8 +5,8 @@
 from dateutil import parser
 import os, re, fileinput as fi
 
-cmdlist = ['add', 'remove', 'edit', 'comp', 'help', 'list', 'past','source']
-magicnumber = 5
+cmdlist = ['add', 'remove', 'edit', 'comp', 'help', 'attending', 'missing', 'list', 'past', 'source']
+magicnumber = 7
 log = './trip.log'
 pastlog = './past.log'
 testlog = './test.log'
@@ -63,11 +63,12 @@ def remove(args):
         response = 'no matching trips found'
     else:
         todel = match[0] + '\n'
-        for line in fi.input(file.name, inplace=1):
+        fil = fi.FileInput(file.name, inplace=1)
+        for line in fil:
             if line != todel: 
                 print line,
         response = 'removed "' + match[0] + '"'
-                
+        fil.close()
     return response
 
 def edit(args):
@@ -100,16 +101,119 @@ def edit(args):
         else:
             toedit = match[0] + '\n'
             edited = ''
-            for line in fi.input(file.name, inplace=1):
+            fil = fi.FileInput(file.name, inplace=1)
+            for line in fil:
                 if line == toedit:
                     edited = line.replace(old, new, 1)
                     print edited,
                 else:
                     print line,
-
+            fil.close()
             response = 'changed "' + match[0] + '" to "' + edited[:-1] + '"'
                 
     return response    
+
+
+def attending(args):
+    # figure out damn logic
+    response = ''
+    trips = getcontents(file)
+    if len(args) > 1:
+        user = args[0]
+        args = args[1]
+
+    if args == '':
+        return response
+
+    match = filter(lambda e: args in e, trips)
+
+    if len(match) == 0:
+        response = 'no matching trips found'
+    else:
+        hasatt = True
+        attindex = 0
+        newmatch = []
+        match = match[0].rsplit()
+        for e in match:
+            if '|attending|' in e:
+                attindex = match.index(e)
+
+        if attindex == 0:
+            hasatt = False
+            newmatch = match + ['|attending|']
+            attindex = newmatch.index('|attending|')
+
+        if user in newmatch[attindex:]:
+            response = 'appreciate the enthusiasm, but you already said you would go' 
+        else:
+            match = ' '.join(match)
+            newmatch = ' '.join(newmatch)
+            toattend = match + '\n'
+            newtoattend = newmatch + '\n'
+            attending = ''
+
+            fil = fi.FileInput(file.name, inplace=1)
+            for line in fil:
+                if line == newtoattend:
+                    attending = line[:-1] + ' ' + user + '\n'
+                    print attending,
+                elif line == toattend:
+                    attending = line[:-1] + ' |attending| ' + user + '\n'
+                    print attending,
+                else:
+                    print line,
+            fil.close()
+            response = user + ' is now attending "' + attending[:-1] + '"' 
+                    
+    return response
+
+def missing(args):
+    # need to mirror attending after it works
+    response = ''
+    trips = getcontents(file)
+    if len(args) > 1:
+        user = args[0]
+        args = args[1]
+
+    if args == '':
+        return response
+
+    match = filter(lambda e: args in e, trips)
+
+    if len(match) == 0:
+        response = 'no matching trips found'
+    else:
+        attindex = 0
+        match = match[0].rsplit()
+        for e in match:
+            if '|attending|' in e:
+                attindex = match.index(e)
+
+        if attindex == 0:
+            match.append('|attending|')
+            attindex = match.index('|attending|')
+
+        if user not in match[attindex+1:]:
+            response = "i don't recall you attending in the first place" 
+        else:
+            match = ' '.join(match)
+            tomiss = match + '\n'
+            missing = ''
+
+            fil = fi.FileInput(file.name, inplace=1)
+            for line in fil:
+                if line == tomiss:
+                    tempstart = line.rsplit('|attending|')[0]
+                    tempfinish = line.rsplit('|attending|')[1]
+                    # more cases to look at
+                    missing = tempstart + ' |attending| ' + tempfinish.replace(user + ' ', '', 1)
+                    print missing,
+                else:
+                    print line,
+            fil.close()
+            response = user + ' is now missing "' + missing[:-1] + '"' 
+
+    return response
 
 def comp(args):
     response = ''
@@ -124,7 +228,8 @@ def comp(args):
         response = 'no matching trips found'
     else:
         tocomp = match[0] + '\n'
-        for line in fi.input(file.name, inplace=1):
+        fil = fi.FileInput(file.name, inplace=1)
+        for line in fil:
             if line == tocomp:
                 if file.name == testlog:
                     plog = open(testpastlog, 'a+')
@@ -134,6 +239,7 @@ def comp(args):
                 plog.close()
             else:
                 print line,
+        fil.close()
         response = 'completed "' + match[0] + '"'
 
     return response
@@ -203,8 +309,11 @@ def dispatch(user, channel, msg):
         else:
             file = open(log, 'a+')
 
+        if cmd == 'attending' or cmd == 'missing':
+            args = [user] + [args]
+
         if cmd not in cmdlist:
-            reply = 'command not implemented'
+            reply = 'command not implemented'            
         elif cmd in cmdlist[:magicnumber]:
             reply = globals()[cmd](args)
         elif cmd in cmdlist[magicnumber:]:
