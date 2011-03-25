@@ -22,13 +22,12 @@ def getcontents(f):
     return lines
 
 def sorttrips(list):
-    # not working
     dated = []
     undated = []
     sortdict = {}
 
     for e in list:
-        if re.search(r'(^|\s)[0-9][0-9]?/[0-9][0-9]?($|\s)', e):
+        if re.search(r'(^|\s)[0-9][0-9]?/[0-9][0-9]?($|\s|,|\.|\?|!)', e):
             dated.append(e)
         else:
             undated.append(e)
@@ -38,9 +37,8 @@ def sorttrips(list):
     for x in range(len(dates)):
         sortdict[dates[x]] = dated[x]
 
-    dsort = sortdict.keys()
-    dsort.sort(key = lambda x: x.timetuple()[1:3])
-    dated = [sortdict[x] for x in dsort]
+    dates.sort(key = lambda x: x.timetuple()[1:3])
+    dated = [sortdict[x] for x in dates]
 
     return dated + undated
 
