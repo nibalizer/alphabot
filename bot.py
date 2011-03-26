@@ -13,7 +13,9 @@ class Bot:
         self.nick = 'trailbot'
         
     def start(self):
-        reactor.connectSSL(self.host, self.port, TrailBotFactory(self.chan, self.nick), TrailBotContextFactory())
+        reactor.connectSSL(self.host, self.port,
+                           TrailBotFactory(self.chan, self.nick),
+                           TrailBotContextFactory())
         reactor.run()
 
 def main():

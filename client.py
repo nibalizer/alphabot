@@ -35,7 +35,7 @@ class TrailBot(irc.IRCClient):
             if type(reply) is types.StringType:
                 self.msg(channel, reply) 
             else:
-                if len(reply) > 0:
+                if not len(reply):
                     self.msg(channel, reply[0])
                     for trip in reply[1:]:
                         self.msg(user, trip)                
