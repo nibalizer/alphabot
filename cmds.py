@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-#
-# ABQIAAAAAX65p8doZAZ2sD27O8hGxRRsaZwSbRsXRPeXpEJl89c2a4Dt3xTCoPsHXlv4iZnwZLg2C929GudycQ
 
 import os
 import re
@@ -297,12 +295,12 @@ def list():
 
 def past():
     if file.name == test_log:
-        p = open(testpast_log, 'a+')
+        p = open(testpast_log, 'r')
     else:
-        p = open(past_log, 'a+')
+        p = open(past_log, 'r')
     done = get_contents(p)
     p.close()
-    
+
     done.insert(0, 'sending past trips list in pm')
     return done
 
@@ -339,4 +337,5 @@ def dispatch(user, channel, msg):
     else:
         reply = ''
 
+    print reply
     return reply
