@@ -60,8 +60,8 @@ def remove(args):
 
     if not args:
         return response
-
-    match = filter(lambda e: args in e, trips)
+    
+    match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
         response = 'no matching trips found'
     else:
