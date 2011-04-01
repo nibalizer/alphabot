@@ -3,12 +3,13 @@
 import os
 import re
 import fileinput as fi
+import docs
+
 from dateutil import parser
 
-MAGIC_NUMBER = 7
+MAGIC_NUMBER = 5
 
-cmdlist = ['add', 'remove', 'edit', 'comp', 'help', 'attending', 'missing',
-           'list', 'past', 'source']
+cmdlist = ['add', 'remove', 'edit', 'comp', 'help', 'list', 'past', 'source']
 log = './trip.log'
 past_log = './past.log'
 test_log = './test.log'
@@ -46,6 +47,9 @@ def sort_trips(list):
 def add(args):
     if not args:
         return ''
+
+    link = docs.docify(args)
+    args = args + ' | sign up and/or share your car here: ' + link
 
     file.write(args + '\n')
     return 'added "' + args + '"'
@@ -115,108 +119,6 @@ def edit(args):
                 
     return response    
 
-
-def attending(args):
-    response = ''
-    trips = get_contents(file)
-    if len(args) > 1:
-        user = args[0]
-        args = args[1]
-
-    if not args:
-        return response
-
-    match = filter(lambda e: args in e, trips)
-    if not len(match):
-        response = 'no matching trips found'
-    else:
-        has_att = True
-        att_index = 0
-        match = match[0].rsplit()
-        for e in match:
-            if '|attending|' in e:
-                att_index = match.index(e)
-
-        if not att_index:
-            has_att = False
-
-        if has_att and user in match[att_index:]:
-            response = 'appreciate the enthusiasm, but you '\
-                                 'already said you would go'
-        else:
-            match = ' '.join(match)
-            to_attend = match + '\n'
-            attending = ''
-            fil = fi.FileInput(file.name, inplace=1)
-            for line in fil:
-                if line == to_attend:
-                    if has_att:
-                        attending = line[:-1] + ' ' + user + '\n'
-                        print attending,
-                    else:
-                        attending = line[:-1] + ' |attending| ' + user \
-                                                                + '\n'
-                        print attending,
-                else:
-                    print line,
-            fil.close()
-            response = user + ' is now attending "' + attending[:-1] + '"' 
-                    
-    return response
-
-def missing(args):
-    response = ''
-    trips = get_contents(file)
-    if len(args) > 1:
-        user = args[0]
-        args = args[1]
-
-    if not args:
-        return response
-
-    match = filter(lambda e: args in e, trips)
-    if not len(match):
-        response = 'no matching trips found'
-    else:
-        has_att = True
-        att_index = 0
-        match = match[0].rsplit()
-        for e in match:
-            if '|attending|' in e:
-                att_index = match.index(e)
-
-        if not att_index:
-            has_att = False
-
-        if not has_att:
-            response = "no one is going yet" 
-        elif user not in match[att_index:]:
-            response = "you aren't attending yet" 
-        else:
-            match = ' '.join(match)
-            to_miss = match + '\n'
-            missing = ''
-            fil = fi.FileInput(file.name, inplace=1)
-            for line in fil:
-                if line == to_miss:
-                    start = line.rsplit('|attending|')[0]
-                    finish = line.rsplit('|attending|')[1].rsplit()
-
-                    if len(finish) == 1:
-                        missing = start[:-1] + '\n'
-                        print missing,
-                    else:
-                        finish.remove(user)
-                        missing = start + '|attending| ' + ' '.join(finish) \
-                                                                     + '\n'
-                        print missing,
-                else:
-                    print line,
-            fil.close()
-            response = user + ' is now missing "' + missing[:-1] + '"' 
-
-    return response
-
 def comp(args):
     response = ''
     trips = get_contents(file)
@@ -249,8 +151,8 @@ def help(args):
     response = ''
 
     if not args:
-        response = 'add | remove | comp | edit | attending | missing | list ' \
-                                           '| past | source | help [command]'
+        response = 'add | remove | comp | edit | list | past | source | help ' \
+                                                                   '[command]'
     elif not args in cmdlist:
         response = 'command not implemented'
     else:
@@ -266,12 +168,6 @@ def help(args):
             response = 'edit <keys> <s/old/new/>: changes old to new in ' \
                        'trip containing <keys>. remember to escape "/" by ' \
                                   'using "\/" if they occur in old or new.'
-        elif args == 'attending':
-            response = 'attending <keys>: adds your nick to the attending ' \
-                                      'list for the trip containing <keys>'
-        elif args == 'missing':
-            response = 'missing <keys>: removes your nick from the attending ' \
-                                         'list for the trip containing <keys>'
         elif args == 'list':
             response = 'list: lists current trip ideas. the listing is sorted ' \
                                  'by date, with trips missing dates at the end'
@@ -305,7 +201,7 @@ def past():
     return done
 
 def source():
-    return 'source available at https://github.com/stutterbug/trailbot'
+    return 'source available at https://github.com/dzhurley/trailbot'
 
 def dispatch(user, channel, msg):
     reply = None
@@ -333,9 +229,8 @@ def dispatch(user, channel, msg):
             reply = globals()[cmd]()
         file.close()
     elif msg.startswith('trailbot'):
-        reply.append('prefix commands with "@"')
+        reply = 'prefix commands with "@"'
     else:
         reply = ''
 
-    print reply
     return reply
