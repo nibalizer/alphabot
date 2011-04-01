@@ -62,9 +62,11 @@ def remove(args):
         return response
     
     match = filter(lambda e: re.search(args, e, re.I), trips)
+
     if not len(match):
         response = 'no matching trips found'
     else:
+        docs.dedocify(args)
         to_del = match[0] + '\n'
         fil = fi.FileInput(file.name, inplace=1)
         for line in fil:

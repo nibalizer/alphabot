@@ -46,3 +46,15 @@ def docify(prepend):
     remove_first()
 
     return link
+
+def dedocify(to_remove):
+    client = gdata.docs.client.DocsClient(source='trailbot')
+    client.ClientLogin(sekret_username, sekret_password, client.source)
+
+    search = to_remove.replace(' ','+')
+    urluri = 'https://docs.google.com/feeds/default/private/full?q=' + search
+    feed = client.GetDocList(uri=urluri)
+    
+    if feed.entry:
+        doc_entry = feed.entry[0]
+        client.Delete(doc_entry)

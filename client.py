@@ -7,6 +7,7 @@ from twisted.python import rebuild
 
 import types
 import cmds
+import docs
 
 class TrailBot(irc.IRCClient):
     def _get_nickname(self):
@@ -28,6 +29,7 @@ class TrailBot(irc.IRCClient):
 
         if msg == '@reload':
             rebuild.rebuild(cmds)
+            rebuild.rebuild(docs)
             self.msg(channel, 'cmds updated')
         else:
             reply = cmds.dispatch(user, channel, msg)
