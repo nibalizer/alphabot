@@ -62,7 +62,6 @@ def remove(args):
         return response
     
     match = filter(lambda e: re.search(args, e, re.I), trips)
-
     if not len(match):
         response = 'no matching trips found'
     else:
@@ -103,7 +102,7 @@ def edit(args):
         if '\/' in new:
             new = new.replace('\/', '/')
 
-        match = filter(lambda e: search in e, trips)
+        match = filter(lambda e: re.search(search, e, re.I), trips)
         if not len(match):
             response = 'no matching trips found'
         else:
@@ -128,7 +127,7 @@ def comp(args):
     if not args:
         return response
 
-    match = filter(lambda e: args in e, trips)
+    match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
         response = 'no matching trips found'
     else:
