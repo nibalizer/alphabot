@@ -218,6 +218,7 @@ def comp(args):
     if not len(match):
         response = "couldn't find one for you with that info"
     else:
+        docs.dedocify(args)
         to_comp = match[0] + '\n'
         fil = fi.FileInput(file.name, inplace=1)
         for line in fil:
@@ -226,14 +227,16 @@ def comp(args):
                     plog = open(testpast_log, 'a+')
                 else:
                     plog = open(past_log, 'a+')
+
+                # removes the google doc info before writing to the past log
+                to_comp = to_comp[:to_comp.index(' | rsvp/share')] + '\n'
                 plog.write(to_comp)
                 plog.close()
             else:
                 print line,
         fil.close()
-        response = '"' + match[0] + '" was fun, is done, and can be seen in ' \
-                                                               'the past log'
-
+        response = '"' + to_comp[:-1] + '" was fun, is done, and can be seen ' \
+                                                             'in the past log'
     return response
 
 def help(args):
@@ -316,14 +319,15 @@ def past():
     done = get_contents(p)
     p.close()
 
-    done.insert(0, "i'll send you a private message with all of the past trips")
+    done.insert(0, "prepare for nostalgia via private message")
     return done
 
 def source():
     """returns a link to the trailbot repo on github"""
 
     return 'you can find all my lovely bits and pieces at ' \
-                     'https://github.com/dzhurley/trailbot'
+           'https://github.com/dzhurley/trailbot | join #trailbot if you feel' \
+           ' like screwing around with me *wink* *wink*'
 
 def dispatch(user, channel, msg):
     """opens the proper log file and calls the proper command method in the msg
@@ -370,8 +374,7 @@ def dispatch(user, channel, msg):
             reply = globals()[cmd]()
         file.close()
     elif msg.startswith('trailbot'):
-        reply = "you must be new since you're doing it wrong, you should try " \
-                                                                     "'@help'"
+        reply = "you must be new, you should try '@help'"
     else:
         reply = ''
 

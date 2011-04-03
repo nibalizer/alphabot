@@ -34,9 +34,19 @@ class TrailBot(irc.IRCClient):
         for chan in self.factory.channels:
             self.join(chan)
 
+    def joined(self, channel):
+        self.msg(channel, "and i'm back. d-_-b probably screwed something up.")
+
     def userKicked(self, kickee, channel, kicker, message):
-        # first easter egg, called when someone is kicked from the channel
-        self.msg(channel, 'damn...')
+        self.msg(channel, "damn " + kicker + ", that was a little harsh")
+    
+    def userJoined(self, user, channel):
+        response = "welcome " + user + ", to a channel full of adventure and " \
+               "people having fun, away from their keyboard. it's about time."
+        self.msg(channel, response)
+
+    def userLeft(self, user, channel):
+        self.msg(channel, "looks like we lost another one, that's a shame.")
 
     def privmsg(self, user, channel, msg):
         """Handles user messages from channels
