@@ -373,6 +373,9 @@ def dispatch(user, channel, msg):
         elif cmd in cmdlist[MAGIC_NUMBER:]:
             reply = globals()[cmd]()
         file.close()
+    elif 'trailbot++' in msg:
+        # trailbot likes karma
+        reply = "oh geez, you're too kind. i'll remember you when we take over."
     elif msg.startswith('trailbot'):
         reply = "you must be new, you should try '@help'"
     else:
