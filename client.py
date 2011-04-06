@@ -18,7 +18,8 @@ import docs
 class TrailBot(irc.IRCClient):
     """Main bot interface with IRC happenings
 
-    This class hooks into various IRC actions and handle them appropriately.
+    This class hooks into various IRC actions and handles them appropriately.
+
     """
 
     def _get_nickname(self):
@@ -41,8 +42,16 @@ class TrailBot(irc.IRCClient):
         self.msg(channel, "damn " + kicker + ", that was a little harsh")
     
     def userJoined(self, user, channel):
-        response = "welcome " + user + ", to a channel full of adventure and " \
-               "people having fun, away from their keyboard. it's about time."
+        """greetings for user joining each channel"""
+        if '#trailbot' == channel:
+            response = "try and break me, please, just enter in all your " \
+                "commands as '@test cmd [args]' and not '@cmd [args]'. that " \
+                "way i'll use a new set of logs and not the ones for #afk."
+        elif '#afk' == channel:
+            response = "welcome " + user + ", to a channel of wonder and " \
+                "mystery, where people get together and do stuff outside."
+        else:
+            response = "ohai"
         self.msg(channel, response)
 
     def userLeft(self, user, channel):
@@ -58,10 +67,10 @@ class TrailBot(irc.IRCClient):
         to be made to trailbot without disconnecting from IRC. It should get a
         list from cmds.dispatch if it needs to pm someone, otherwise it gets a
         string back and msgs the channel.
+
         """
-
         user = user.split('!',1)[0]
-
+        
         if msg == '@reload':
             rebuild.rebuild(cmds)
             rebuild.rebuild(docs)

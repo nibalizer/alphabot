@@ -99,7 +99,7 @@ def add(args):
     args = args + ' | rsvp/share cars here: ' + link
 
     file.write(args + '\n')
-    return 'added "' + args + '"'
+    return '"' + args + '" is now in the logs for viewing pleasure.'
 
 def remove(args):
     """removes a trip and it's doc that matches the args from the log
@@ -216,7 +216,7 @@ def comp(args):
 
     match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
-        response = "couldn't find one for you with that info"
+        response = "couldn't find one for you with that info, try again"
     else:
         docs.dedocify(args)
         to_comp = match[0] + '\n'
@@ -346,7 +346,7 @@ def dispatch(user, channel, msg):
     commands with no arguments on the right.
     
     This reduces many possible elif statements down to a few lines, which is 
-    pretty cool.'
+    pretty cool.
     
     """
 
@@ -366,8 +366,7 @@ def dispatch(user, channel, msg):
             file = open(log, 'a+')
 
         if cmd not in cmdlist:
-            reply = "either i don't know that one, or i don't want to know " \
-                                                                 "that one"
+            reply = user + ", come again?"
         elif cmd in cmdlist[:MAGIC_NUMBER]:
             reply = globals()[cmd](args)
         elif cmd in cmdlist[MAGIC_NUMBER:]:
@@ -375,7 +374,7 @@ def dispatch(user, channel, msg):
         file.close()
     elif 'trailbot++' in msg:
         # trailbot likes karma
-        reply = "oh geez, you're too kind. i'll remember you when we take over."
+        reply = "you're too kind " + user + ", too kind."
     elif msg.startswith('trailbot'):
         reply = "you must be new, you should try '@help'"
     else:
