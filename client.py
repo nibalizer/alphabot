@@ -14,6 +14,8 @@ from twisted.python import rebuild
 import types
 import cmds
 import docs
+import voice
+import random
 
 class TrailBot(irc.IRCClient):
     """Main bot interface with IRC happenings
@@ -36,26 +38,17 @@ class TrailBot(irc.IRCClient):
             self.join(chan)
 
     def joined(self, channel):
-        self.msg(channel, "and i'm back. d-_-b probably screwed something up.")
+        self.msg(channel, random.choice(voice.joined))
 
     def userKicked(self, kickee, channel, kicker, message):
-        self.msg(channel, "damn " + kicker + ", that was a little harsh")
+        self.msg(channel, kicker + random.choice(voice.saw_kick))
     
     def userJoined(self, user, channel):
         """greetings for user joining each channel"""
-        if '#trailbot' == channel:
-            response = "try and break me, please, just enter in all your " \
-                "commands as '@test cmd [args]' and not '@cmd [args]'. that " \
-                "way i'll use a new set of logs and not the ones for #afk."
-        elif '#afk' == channel:
-            response = "welcome " + user + ", to a channel of wonder and " \
-                "mystery, where people get together and do stuff outside."
-        else:
-            response = "ohai"
-        self.msg(channel, response)
+        self.msg(channel, user + voice.user_joined[channel])
 
     def userLeft(self, user, channel):
-        self.msg(channel, "looks like we lost another one, that's a shame.")
+        self.msg(channel, random.choice(voice.user_left))
 
     def privmsg(self, user, channel, msg):
         """Handles user messages from channels
@@ -74,7 +67,8 @@ class TrailBot(irc.IRCClient):
         if msg == '@reload':
             rebuild.rebuild(cmds)
             rebuild.rebuild(docs)
-            self.msg(channel, 'cmds updated')
+            rebuild.rebuild(voice)
+            self.msg(channel, 'reloaded and ready to go')
         else:
             reply = cmds.dispatch(user, channel, msg)
 

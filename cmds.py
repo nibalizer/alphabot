@@ -20,6 +20,8 @@ import os
 import re
 import fileinput as fi
 import docs
+import voice
+import random
 
 from dateutil import parser
 
@@ -127,7 +129,7 @@ def remove(args):
     
     match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
-        response = "couldn't find one for you with that info"
+        response = random.choice(voice.no_match)
     else:
         docs.dedocify(args)
         to_del = match[0] + '\n'
@@ -187,10 +189,9 @@ def edit(args):
 
         match = filter(lambda e: re.search(search, e, re.I), trips)
         if not len(match):
-            response = "couldn't find one for you with that info"
+            response = random.choice(voice.no_match)
         elif old not in match[0]:
-            response = "i found the trip you were talking about, but not the " \
-                                                  "thing you wanted to change"
+            response = random.choice(voice.no_match)
         else:
             to_edit = match[0] + '\n'
             edited = ''
@@ -227,7 +228,7 @@ def comp(args):
 
     match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
-        response = "couldn't find one for you with that info, try again"
+        response = random.choice(voice.no_match)
     else:
         docs.dedocify(args)
         to_comp = match[0] + '\n'
@@ -262,39 +263,10 @@ def help(args):
 
     response = ''
 
-    if not args:
-        response = 'add | remove | comp | edit | list | past | source | help ' \
-                                                                   '[command]'
-    elif not args in cmdlist:
-        response = "either i don't know that one, or i don't want to know " \
-                                                                 "that one"
+    if args and args not in cmdlist:
+        response = random.choice(voice.bad_cmd)
     else:
-        if args == 'add':
-            response = "add <trip>: adds the trip to the list and appends a " \
-                       "link to a handy dandy google doc with ride, meeting " \
-                                                    "location, and rsvp info"
-        elif args == 'remove':
-            response = "remove <keys>: deletes the trip from the list that " \
-                       "matches whatever keyword(s) you give, and don't " \
-                                                       "worry about case"
-        elif args == 'comp':
-            response = "comp <keys>: completes a trip and moves it to the " \
-                                               "past log for fond memories"
-        elif args == 'edit':
-            response = "edit <keys> s/<old>/<new>/: replaces the old with " \
-                       "the new in the trip matching whatever keyword(s). " \
-                       "old and new can be any number of words/characters, " \
-                       "just escape '/' with '\/' if you're editing that."
-        elif args == 'list':
-            response = "list: shows the next trip that has a date in the " \
-                       "channel, then sends the full list of trip to you in " \
-                       "private message (because who likes spam?)"
-        elif args == 'past':
-            response = "past: sends a private message with all the past " \
-                       "trips that've been done for nostalgia's sake"
-        elif args == 'source':
-            response = "source: gives the github link for my bits and pieces"
-
+        response = voice.help[args]
     return response
 
 def list():
@@ -378,7 +350,7 @@ def dispatch(user, channel, msg):
             file = open(log, 'a+')
 
         if cmd not in cmdlist:
-            reply = user + ", come again?"
+            reply = user + ", " + random.choice(voice.bad_cmd)
         elif cmd in cmdlist[:MAGIC_NUMBER]:
             reply = globals()[cmd](args)
         elif cmd in cmdlist[MAGIC_NUMBER:]:
@@ -386,9 +358,9 @@ def dispatch(user, channel, msg):
         file.close()
     elif 'trailbot++' in msg:
         # trailbot likes karma
-        reply = "you're too kind " + user + ", too kind."
-    elif msg.startswith('trailbot'):
-        reply = "you must be new, you should try '@help'"
+        reply = user + random.choice(voice.karma)
+    elif msg.startswith('trailbot,') or msg.startswith('trailbot:'):
+        reply = user + random.choice(voice.addressed)
     else:
         reply = ''
 
