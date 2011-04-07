@@ -39,13 +39,21 @@ testpast_log = './testpast.log'
 file = None
 
 def get_contents(f):
-    """pulls lines from the open file, trims '\n',and returns list of lines"""
+    """returns content of file f in list of lines
+
+    This method takes in the open log file and reads its content into a list.
+    The list is then stripped of the newline characters and sorted, then
+    returned to the calling method.
+    
+    """
 
     if f.tell():
         f.seek(0, 0)
 
     lines = f.readlines()
     lines = [l[:-1] for l in lines]
+    lines = sort_trips(lines)
+
     return lines
 
 def sort_trips(list):
@@ -180,6 +188,9 @@ def edit(args):
         match = filter(lambda e: re.search(search, e, re.I), trips)
         if not len(match):
             response = "couldn't find one for you with that info"
+        elif old not in match[0]:
+            response = "i found the trip you were talking about, but not the " \
+                                                  "thing you wanted to change"
         else:
             to_edit = match[0] + '\n'
             edited = ''
@@ -289,13 +300,14 @@ def help(args):
 def list():
     """lists the current trips in the log
 
-    This pulls all the trips from the current log file, sorts them with
-    sort_trips() by date, then returns a list of the trips.
+    This pulls all the trips from the current log file and returns a list of
+    the trips to the user. The first element of the list, the next trip, is
+    copied and formatted for replying in the channel, and the rest is left for
+    a private message to the user.
 
     """
 
     to_list = get_contents(file)
-    to_list = sort_trips(to_list)
 
     if len(to_list):
         first = "next up is " + to_list[0] + " and i'm sending the full " \
