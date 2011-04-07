@@ -25,9 +25,6 @@ import random
 
 from dateutil import parser
 
-# magic number for global() call in dispatch slicing
-MAGIC_NUMBER = 5
-
 # list of commands currently supported by trailbot
 cmdlist = ['add', 'remove', 'edit', 'comp', 'help', 'list', 'past', 'source']
 
@@ -93,7 +90,7 @@ def sort_trips(list):
 
     return dated + undated
 
-def add(args):
+def add(*args):
     """adds trip and google doc to log
     
     This checks for something to add, gets a link from a new google doc made
@@ -102,8 +99,10 @@ def add(args):
 
     """
 
-    if not args:
+    if args and not args[0]:
         return ''
+    else:
+        args = args[0]
 
     link = docs.docify(args)
     args = args + ' | rsvp/share cars here: ' + link
@@ -111,7 +110,7 @@ def add(args):
     file.write(args + '\n')
     return '"' + args + '" is now in the logs for viewing pleasure.'
 
-def remove(args):
+def remove(*args):
     """removes a trip and it's doc that matches the args from the log
     
     This method searches for a case insensitive matching trip in the log based
@@ -124,8 +123,10 @@ def remove(args):
     response = ''
     trips = get_contents(file)
 
-    if not args:
+    if args and not args[0]:
         return response
+    else:
+        args = args[0]
     
     match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
@@ -141,7 +142,7 @@ def remove(args):
         fil.close()
     return response
 
-def edit(args):
+def edit(*args):
     """edits a trip entry, using s/<old>/<new>/
     
     This takes a string of any number of keywords followed by the sequence 
@@ -164,8 +165,10 @@ def edit(args):
     trips = get_contents(file)
     cmd_index = 0
 
-    if not args:
+    if args and not args[0]:
         return response
+    else:
+        args = args[0]
 
     args = args.rsplit()
     for e in args:
@@ -208,7 +211,7 @@ def edit(args):
                 
     return response    
 
-def comp(args):
+def comp(*args):
     """completes a trip by moving it to the past log
     
     This completes a recent trip by finding the entry in the log and moving it
@@ -223,8 +226,10 @@ def comp(args):
     response = ''
     trips = get_contents(file)
 
-    if not args:
+    if args and not args[0]:
         return response
+    else:
+        args = args[0]
 
     match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
@@ -251,7 +256,7 @@ def comp(args):
                                                              'in the past log'
     return response
 
-def help(args):
+def help(*args):
     """displays all help information available
 
     This is the main help method for commands available in trailbot. With no
@@ -263,13 +268,18 @@ def help(args):
 
     response = ''
 
+    if not args:
+        return response
+    else:
+        args = args[0]
+
     if args and args not in cmdlist:
         response = random.choice(voice.bad_cmd)
     else:
         response = voice.help[args]
     return response
 
-def list():
+def list(*args):
     """lists the current trips in the log
 
     This pulls all the trips from the current log file and returns a list of
@@ -288,7 +298,7 @@ def list():
 
     return to_list
 
-def past():
+def past(*args):
     """shows the past trips written to the past log
 
     This opens the real or test past log, depending on the command issue, 
@@ -306,7 +316,7 @@ def past():
     done.insert(0, "prepare for nostalgia via private message")
     return done
 
-def source():
+def source(*args):
     """returns a link to the trailbot repo on github"""
 
     return 'you can find all my lovely bits and pieces at ' \
@@ -351,10 +361,8 @@ def dispatch(user, channel, msg):
 
         if cmd not in cmdlist:
             reply = user + ", " + random.choice(voice.bad_cmd)
-        elif cmd in cmdlist[:MAGIC_NUMBER]:
+        else:
             reply = globals()[cmd](args)
-        elif cmd in cmdlist[MAGIC_NUMBER:]:
-            reply = globals()[cmd]()
         file.close()
     elif 'trailbot++' in msg:
         # trailbot likes karma
