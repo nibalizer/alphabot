@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-"""The meat and bones of trailbot functionality, a collection of methods.
+"""The meat and bones of trailbot functionality, a collection of functions.
 
 This is where most of the work was put in on trailbot to process all the
 commands and return appropriate replies. The module is used through the
-dispatch method that calls the proper command method and opens the proper
+dispatch function that calls the proper command function and opens the proper
 files to interact with.
 
-There are a few utility methods for repetitive code, probably more to come
-when I get around to cleaning things up, but for the most part each method
+There are a few utility functions for repetitive code, probably more to come
+when I get around to cleaning things up, but for the most part each function
 is a trailbot command.
 
 The replies from trailbot are snarky, for sure, and I hope to add more fun
@@ -40,9 +40,9 @@ file = None
 def get_contents(f):
     """returns content of file f in list of lines
 
-    This method takes in the open log file and reads its content into a list.
+    This function takes in the open log file and reads its content into a list.
     The list is then stripped of the newline characters and sorted, then
-    returned to the calling method.
+    returned to the calling function.
     
     """
 
@@ -58,7 +58,7 @@ def get_contents(f):
 def sort_trips(list):
     """sorts a list of trips by date, appending trips without dates
 
-    This method takes in a list of trips that may or may not contain dates.
+    This function takes in a list of trips that may or may not contain dates.
     It breaks the list into to lists, one containing dated trips and the other
     containing undated trips, using a regex to test each line.
 
@@ -80,7 +80,8 @@ def sort_trips(list):
             dated.append(e)
         else:
             undated.append(e)
-
+    
+    # need to deal with parsing errors
     dates = [parser.parse(x, fuzzy=True) for x in dated]
     for x in range(len(dates)):
         sort_dict[dates[x]] = dated[x]
@@ -113,9 +114,9 @@ def add(*args):
 def remove(*args):
     """removes a trip and it's doc that matches the args from the log
     
-    This method searches for a case insensitive matching trip in the log based
+    This function searches for a case insensitive matching trip in the log based
     on keywords found in args. If a match is made, the google doc for that trip
-    is trashed and the trip entry in the log is deleted. The method returns a 
+    is trashed and the trip entry in the log is deleted. The function returns a 
     confirmation with the trip removed. 
     
     """
@@ -152,7 +153,7 @@ def edit(*args):
     Note that <old> and <new> args containing '/' need to be escaped as '\/'
     to parse correctly.
 
-    The method splits up the string to keywords and 's/<old>/<new>/', checks
+    The function splits up the string to keywords and 's/<old>/<new>/', checks
     the format of 's/<old>/<new>/', replaces '\/' with '/' if they're used,
     then starts to search for the matching trip.
 
@@ -259,7 +260,7 @@ def comp(*args):
 def help(*args):
     """displays all help information available
 
-    This is the main help method for commands available in trailbot. With no
+    This is the main help function for commands available in trailbot. With no
     arguments, it returns a list of commands. If a specific command is given
     as an argument, it will return a more detailed explanation of the command
     and parameters that it requires.
@@ -324,7 +325,7 @@ def source(*args):
            ' like screwing around with me *wink* *wink*'
 
 def dispatch(user, channel, msg):
-    """opens the proper log file and calls the proper command method in the msg
+    """opens the proper log file and calls the proper command function in the msg
     
     This is called from client.py on a privmsg to process commands and work with
     files. If trailbot is addressed directly, a response is returned to check
@@ -334,13 +335,9 @@ def dispatch(user, channel, msg):
     '@cmd [args], and doing so utilizes different logs to try stuff out on. That
     way, you don't screw with trips that people may want to actually go on.
 
-    The proper command method is then dispatched with a globals() call and 
-    slicing the cmd_list with MAGIC_NUMBER. MAGIC_NUMBER, when slicing the list
-    of commands up, gives the commands that take arguments on the left and the
-    commands with no arguments on the right.
-    
-    This reduces many possible elif statements down to a few lines, which is 
-    pretty cool.
+    The proper command function is then dispatched with a globals() call with the
+    args given. By implementing each command function with *args, the actual call
+    of the function is done in one line, which is pretty awesome.
     
     """
 

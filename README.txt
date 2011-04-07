@@ -37,7 +37,7 @@ Current Features:
 		- @edit <keywords> s/<old>/<new>/ : <keywords> is treated the same as in
 		  @remove to match a specific trip, then whatever is in <old> with 
 		  whatever is in <new>. <old> and <new> can both be any number of words,
-	      but <old> is a case sensitive match. If <old> or <new> happens to
+		  but <old> is a case sensitive match. If <old> or <new> happens to
 		  contain '/', trailbot can deal with it as long as it is escaped by
 		  using '\/' instead.
 
@@ -93,6 +93,9 @@ Ideas/Hopes for Future:
 
 	- Increase overall snarky attitude, possibly pulling replies into a list
 	  that will let trailbot pick a random reply based on the context.
+
+	- Add better error handling or new bits to sort_trips() for parsing trips
+	  with dates to datetime objects.
 
 Dependencies:
 
