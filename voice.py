@@ -19,13 +19,21 @@ user_joined = {'#trailbot': ", try and break me, please, just enter in all " \
 
 user_left = ["looks like we lost another one, that's a shame."]
 
-joined = ["and i'm back, d-_-b probably screwed something up"]
+joined = ["d-_-b probably screwed something up",
+          "well that was a nice break",
+          "let's see if i work this time around"]
 
-saw_kick = [", that was a little harsh"]
+saw_kick = [", that was a little harsh",
+            ", what did they ever do to you?",
+            ", you are just a mean person"]
 
-bad_cmd = ["either i don't know that one, or i don't want to know that one"]
+bad_cmd = ["either i don't know that one, or i don't want to know that one",
+           "not sure what you're trying to do there, don't know that one",
+           "something went wrong, but it was on your end"]
 
-no_match = ["couldn't find one for you with that info"]
+no_match = ["couldn't find one for you with that info",
+            "no match, you sure you're looking for the right thing?",
+            "i found nothing to work with on my end with that info"]
 
 help = {'': 'add | remove | comp | edit | list | past | source | help ' \
                                                             '[command]',
@@ -46,6 +54,10 @@ help = {'': 'add | remove | comp | edit | list | past | source | help ' \
             "that've been done for nostalgia's sake",
         'source': "source: gives the github link for my bits and pieces"}
 
-addressed = ["you must be new, you should try '@help'"]
+addressed = [", you must be new, you should try '@help'",
+             ", appreciate the attention, but all my commands start with '@'",
+             ", hello to you too, but you won't get anywhere using my nick"]
 
-karma = ["you're too kind, far too kind"]
+karma = [", you're too kind, far too kind",
+         ", good day sir/madam/genderneutraltitle",
+         ", may good luck and better alcohol find their way to you"]
