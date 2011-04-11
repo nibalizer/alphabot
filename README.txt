@@ -23,6 +23,10 @@ Current Features:
 	  trips that #afk is planning. This is done with '@test <cmd> [args]' instead
 	  of '@cmd [args]'.
 
+	- Most responses trailbot will give have been pulled out to voices.py, which
+	  allows for dynamic updating and random selection. The command specific
+	  confirmations remain in client.py and cmds.py.
+
 	- Bot commands include:
 		
 		- @add <trip description> : The <trip description> is first appended with
@@ -76,6 +80,8 @@ Current Features:
 
 		- When a user leaves the channel, trailbot mourns the loss.
 
+		- When trailbot receives good/bad karma, trailbot responds appropriately.
+
 Ideas/Hopes for Future:
 
 	- All items are subject to change, depend highly on suggestions from others
@@ -91,8 +97,7 @@ Ideas/Hopes for Future:
 	- Sort the list of trips only when trips are added, instead of every time a
 	  command is executed by trailbot.
 
-	- Increase overall snarky attitude, possibly pulling replies into a list
-	  that will let trailbot pick a random reply based on the context.
+	- Increase overall snarky attitude, find more ways to comment on things.
 
 	- Add better error handling or new bits to sort_trips() for parsing trips
 	  with dates to datetime objects.
