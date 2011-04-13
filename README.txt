@@ -99,10 +99,14 @@ Ideas/Hopes for Future:
 
 	- Increase overall snarky attitude, find more ways to comment on things.
 
+	- Update the google doc with the new trip info after an @edit.
+
 	- Add better error handling or new bits to sort_trips() for parsing trips
-	  with dates to datetime objects.
+	  with dates to datetime objects. Also handle multiple dates in one trip.
 
 Dependencies:
+
+	- twisted : All the IRC bits and module reloading is handled by twisted.
 
 	- gdata : Google Documents List Data API, used for the doc generation and 
 	  deletion when users add and remove trips.
