@@ -22,11 +22,12 @@ import fileinput as fi
 import docs
 import voice
 import random
+import tinyurl
 
 from dateutil import parser
 
 # list of commands currently supported by trailbot
-cmdlist = ['add', 'remove', 'edit', 'comp', 'help',
+cmdlist = ['add', 'remove', 'edit', 'comp', 'photos', 'help',
            'next', 'list', 'past', 'source']
 
 # files associated with logging trips
@@ -192,7 +193,7 @@ def edit(*args):
 
     form = re.search(r'^s/.*/.*/$', command)
     if not form:
-        response = "you are doing it wrong. it's '@edit <keys> s/<old>/<new>/"
+        response = "you are doing it wrong. it's '@edit <keys> s/<old>/<new>/'"
     else:
         # separates <old> and <new> and deals with \/ if it's there
         old = re.split(r'(?<!\\)/', command)[1]
@@ -266,6 +267,70 @@ def comp(*args):
         fil.close()
         response = '"' + to_comp[:-1] + '" was fun, is done, and can be seen ' \
                                                              'in the past log'
+    return response
+
+def photos(*args):
+    """add a link to photos from a trip on the end of a past trip
+
+    This function is similar to edit in how it handles the syntax. The arguments
+    should be a number of keywords for finding a matching past trip followed by
+    a link to whatever photos people have. The args are split, then the link is
+    checked if it is indeed a link.
+    
+    Once the syntax is checked, a matching trip for the keywords is found or a 
+    "no match" response is given to the channel. If a match is found, the line
+    in the file is appended with the link and a confirmation is returned.
+
+    """
+        
+    response = ''
+    cmd_index = 0
+
+    if file.name == test_log:
+        p = open(testpast_log, 'r+')
+    else:
+        p = open(past_log, 'r+')
+    trips = get_contents(p)
+
+    if args and not args[0]:
+        return response
+    else:
+        args = args[0]
+
+    args = args.rsplit()
+    for e in args:
+        if 'http' in e:
+            cmd_index = args.index(e)
+            break
+
+    keys = ' '.join(args[:cmd_index])
+    link = ' '.join(args[cmd_index:])
+
+    form = re.search(r'http', link)
+    if not form:
+        response = "you are doing it wrong. it's '@photos <keys> <link>'"
+    else:
+        match = filter(lambda e: re.search(keys, e, re.I), trips)
+        if not len(match):
+            response = random.choice(voice.no_match)
+        else:
+            to_photo = match[0] + '\n'
+            link = tinyurl.create_one(link)
+
+            fil = fi.FileInput(p.name, inplace=1)
+            for line in fil:
+                if line == to_photo:
+                    if 'awesome photos' in line:
+                        print line[:-1] + ', ' + link + '\n',
+                    else:
+                        print line[:-1] + " | awesome photos can be found " \
+                                                     "here: " + link + '\n',
+                else:
+                    print line,
+            fil.close()
+            p.close()
+            response = 'that past trip "' + to_photo[:-1] + '" now has a nice ' \
+                            'little link to the photos you added from the trip.' 
     return response
 
 def help(*args):
@@ -343,9 +408,12 @@ def past(*args):
         p = open(past_log, 'r')
     done = get_contents(p)
     p.close()
-
-    done.insert(0, "prepare for nostalgia via private message")
-    return done
+    
+    if done:
+        done.insert(0, "prepare for nostalgia via private message")
+        return done
+    else:
+        return "looks like no one's done anything. sad."
 
 def source(*args):
     """returns a link to the trailbot repo on github"""
