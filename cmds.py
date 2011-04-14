@@ -49,10 +49,8 @@ def get_contents(f):
 
     if f.tell():
         f.seek(0, 0)
-
     lines = f.readlines()
     lines = [l[:-1] for l in lines]
-    lines = sort_trips(lines)
 
     return lines
 
@@ -75,7 +73,7 @@ def sort_trips(list):
 
     pre_dated = {}
     pre_undated = []
-    sort_dict = {}
+    parsed_dates = {}
 
     for e in list:
         match = re.search(r'(^|\s)[0-9][0-9]?/[0-9][0-9]?($|\s|,|\.|\?|!)', e)
@@ -84,7 +82,6 @@ def sort_trips(list):
         else:
             pre_undated.append(e)
     
-    parsed_dates = {}
     for v in pre_dated.keys():
         parsed_date = parser.parse(v, fuzzy=True)
         parsed_dates[parsed_date] = pre_dated[v]
@@ -99,8 +96,9 @@ def add(*args):
     """adds trip and google doc to log
     
     This checks for something to add, gets a link from a new google doc made
-    in docs.docify(), and appends the info to the trip. It then writes the
-    trip out to the log and returns a success reply.
+    in docs.docify(), and appends the info to the trip. The function then reads
+    in the current file and inserts the new trip in sorted order, then writes
+    the file back out in order. A confirmation response is returned.
 
     """
 
@@ -112,7 +110,14 @@ def add(*args):
     link = docs.docify(args)
     args = args + ' | rsvp/share cars here: ' + link
 
-    file.write(args + '\n')
+    lines = get_contents(file) + [args]
+    lines = sort_trips(lines)
+    lines = [l + '\n' for l in lines]
+
+    if file.tell():
+        file.seek(0, 0)
+    file.writelines(lines)
+
     return '"' + args + '" is now in the logs for viewing pleasure.'
 
 def remove(*args):
@@ -377,9 +382,9 @@ def dispatch(user, channel, msg):
         if cmd == 'test':
             cmd = msg.rsplit()[1]
             args = ' '.join(msg.rsplit()[2:])
-            file = open(test_log, 'a+')
+            file = open(test_log, 'r+')
         else:
-            file = open(log, 'a+')
+            file = open(log, 'r+')
 
         if cmd not in cmdlist:
             reply = user + ", " + random.choice(voice.bad_cmd)

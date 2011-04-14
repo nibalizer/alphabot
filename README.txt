@@ -31,7 +31,7 @@ Current Features:
 		
 		- @add <trip description> : The <trip description> is first appended with
 		  a shortened google doc link that is generated from template.txt, then
-		  written to the open trip log.
+		  written to the open trip log in sorted order.
 
 		- @remove <keywords> : <keywords> can contain one or more words that 
 		  match a trip currently in the open trip log. The match is also done
@@ -96,9 +96,6 @@ Ideas/Hopes for Future:
 
 	- Pull common, repetitive logic out of commands/methods and replace with
 	  more generic method calls.
-
-	- Sort the list of trips only when trips are added, instead of every time a
-	  command is executed by trailbot.
 
 	- Update google doc trip description when @edit is done.
 
