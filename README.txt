@@ -104,9 +104,6 @@ Ideas/Hopes for Future:
 
 	- Increase overall snarky attitude, find more ways to comment on things.
 
-	- Add better error handling or new bits to sort_trips() for parsing trips
-	  with dates to datetime objects. Also handle multiple dates in one trip.
-
 Dependencies:
 
 	- twisted : All the IRC bits and module reloading is handled by twisted.
