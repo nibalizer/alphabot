@@ -52,6 +52,11 @@ Current Features:
 		  can be viewed with @past. Whenever a trip is moved, the appended link
 		  to the google doc is removed and the google doc itself is trashed.
 
+		- @photos <keywords> <link> : Like the previous commands, <keywords> is
+		  used to find a matching trip to alter. The <link> is appended to the
+		  trip that is found in the past log. The link will also be shortened,
+		  like the google doc addition in @add.
+
 		- @help [command] : With no arguments, it displays a list of implemented
 		  commands. With a specific command argument, it'll display a specific
 		  reply corresponded to the command's usage and description.
