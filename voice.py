@@ -14,10 +14,12 @@ this module to minimize the code in cmds.py.
 user_joined = {'#trailbot': ", try and break me, please, just enter in all " \
                   "commands as '@test cmd [args]' and not '@cmd [args]'. that " \
                     "way i'll use a new set of logs and not the ones for #afk.",
-               '#afk': "welcome to a channel of wonder and mystery, where " \
+               '#afk': ", welcome to a channel of wonder and mystery, where " \
                    "people get together and do stuff outside."}
 
-user_left = ["looks like we lost another one, that's a shame."]
+user_left = ["looks like we lost another one, that's a shame.",
+             "guess someone didn't want to be here",
+             "awww, i liked them"]
 
 joined = ["d-_-b probably screwed something up",
           "well that was a nice break",
@@ -27,7 +29,7 @@ saw_kick = [", that was a little harsh",
             ", what did they ever do to you?",
             ", you are just a mean person"]
 
-bad_cmd = ["either i don't know that one, or i don't want to know that one",
+bad_cmd = ["either i don't know that one, or you're doing it wrong. maybe both.",
            "not sure what you're trying to do there, don't know that one",
            "something went wrong, but it was on your end"]
 
@@ -35,8 +37,8 @@ no_match = ["couldn't find one for you with that info",
             "no match, you sure you're looking for the right thing?",
             "i found nothing to work with on my end with that info"]
 
-help = {'': 'add | remove | comp | edit | list | past | source | help ' \
-                                                            '[command]',
+help = {'': 'add | remove | comp | edit | next | list | past | source | help ' \
+            '[command]',
         'add': "add <trip>: adds the trip to the list and appends a link to " \
             "a handy dandy google doc with ride, meeting place, and rsvp info",
         'remove': "remove <keys>: deletes the trip from the list that matches " \
@@ -47,17 +49,24 @@ help = {'': 'add | remove | comp | edit | list | past | source | help ' \
             "the trip matching whatever keyword(s). old and new can be any " \
             "number of words/characters, just escape '/' with '\/' if you're " \
             "editing that.",
-        'list': "list: shows the next trip that has a date in the channel, " \
-            "then sends the full list of trip to you in a private message " \
-            "(because who likes spam?)",
+        'next': "next: gives the next planned trip that managed to put a date " \
+            "in the description",
+        'list': "list: sends the complete list of trips to you in a private " \
+            "message, because who likes spam?",
         'past': "past: sends a private message with all the past trips " \
             "that've been done for nostalgia's sake",
         'source': "source: gives the github link for my bits and pieces"}
 
 addressed = [", you must be new, you should try '@help'",
              ", appreciate the attention, but all my commands start with '@'",
-             ", hello to you too, but you won't get anywhere using my nick"]
+             ", well hello, but you won't get far using my nick. try '@help'"]
 
-karma = [", you're too kind, far too kind",
-         ", good day sir/madam/genderneutraltitle",
-         ", may good luck and better alcohol find their way to you"]
+karma_up = [", you're too kind, far too kind",
+            ", good day sir/madam/genderneutraltitle",
+            ", may good luck and better alcohol find their way to you",
+            " is a magnificent human being"]
+
+karma_down = [", why don't you tell how you really feel, huh?",
+              " is a bugger, just thought people should know",
+              ", is this how you keep friends?",
+              ", what did i ever do to you?"]

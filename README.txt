@@ -55,11 +55,13 @@ Current Features:
 		  commands. With a specific command argument, it'll display a specific
 		  reply corresponded to the command's usage and description.
 
-		- @list : This returns the current list of planned trips. The list is
-		  sorted so that trips containing dates are sorted by date and those 
-		  missing dates are added to the bottom of the list. The reply will show
-		  the next dated trip in the channel, then private message the entire
-		  list to the user that gave the command.
+		- @next : This returns the next dated trip to the channel. Simple, and
+		  it makes more sense than the previous implementation of @list, which
+		  did the same thing and sent the rest in a private message.
+
+		- @list : When given, a private message will be sent to the user with 
+		  all of the currently planned trips. The trips will be sorted based on
+		  date, with the undated trips appended.
 
 		- @past : Similar to @list, the past log is returned to the user in a
 		  private message. The first entry in the returned list is sent to the

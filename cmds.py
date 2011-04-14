@@ -26,7 +26,8 @@ import random
 from dateutil import parser
 
 # list of commands currently supported by trailbot
-cmdlist = ['add', 'remove', 'edit', 'comp', 'help', 'list', 'past', 'source']
+cmdlist = ['add', 'remove', 'edit', 'comp', 'help',
+           'next', 'list', 'past', 'source']
 
 # files associated with logging trips
 log = './trip.log'
@@ -280,24 +281,43 @@ def help(*args):
         response = voice.help[args]
     return response
 
+def next(*args):
+    """replies with the next planned trip to the channel
+
+    This gets the list of trips from the current log file and returns the first
+    trip in the sorted list to the channel, which is effectively the next one.
+
+    """
+    response = ''
+    to_list = get_contents(file)
+    
+    if to_list:
+        response = to_list[0]
+    else:
+        response = "i got nothing, you people need to get plannin'"
+
+    return response
+
 def list(*args):
     """lists the current trips in the log
 
     This pulls all the trips from the current log file and returns a list of
-    the trips to the user. The first element of the list, the next trip, is
-    copied and formatted for replying in the channel, and the rest is left for
-    a private message to the user.
+    the trips to the user. A reply to the channel is put in the first element
+    of the list, which indicates that the full trip listing is being sent in
+    a private message.
 
     """
 
     to_list = get_contents(file)
 
-    if len(to_list):
-        first = "next up is " + to_list[0] + " and i'm sending the full " \
-                                                "list in a private message"
+    if to_list:
+        first = "check your private messages for a complete listing of trips " \
+                                                 "that may or may not happen."
         to_list.insert(0, first)
-
-    return to_list
+        return to_list
+    else:
+        return "you people need to get some trips together, because i've got " \
+                                                           "nothing on my end"
 
 def past(*args):
     """shows the past trips written to the past log
@@ -362,9 +382,10 @@ def dispatch(user, channel, msg):
             reply = globals()[cmd](args)
         file.close()
     elif 'trailbot++' in msg:
-        # trailbot likes karma
-        reply = user + random.choice(voice.karma)
-    elif msg.startswith('trailbot,') or msg.startswith('trailbot:'):
+        reply = user + random.choice(voice.karma_up)
+    elif 'trailbot--' in msg:
+        reply = user + random.choice(voice.karma_down)
+    elif re.match(r'trailbot[ ,:]', msg):
         reply = user + random.choice(voice.addressed)
     else:
         reply = ''
