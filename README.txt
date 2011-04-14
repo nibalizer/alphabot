@@ -43,7 +43,8 @@ Current Features:
 		  whatever is in <new>. <old> and <new> can both be any number of words,
 		  but <old> is a case sensitive match. If <old> or <new> happens to
 		  contain '/', trailbot can deal with it as long as it is escaped by
-		  using '\/' instead.
+		  using '\/' instead. Any edits done to the trips through trailbot will
+		  be consistent across the google doc.
 
 		- @comp <keywords> : <keywords> again can be a case insensitive match of
 		  any number of words to match a specific trip. This command moves the
@@ -99,9 +100,9 @@ Ideas/Hopes for Future:
 	- Sort the list of trips only when trips are added, instead of every time a
 	  command is executed by trailbot.
 
-	- Increase overall snarky attitude, find more ways to comment on things.
+	- Update google doc trip description when @edit is done.
 
-	- Update the google doc with the new trip info after an @edit.
+	- Increase overall snarky attitude, find more ways to comment on things.
 
 	- Add better error handling or new bits to sort_trips() for parsing trips
 	  with dates to datetime objects. Also handle multiple dates in one trip.

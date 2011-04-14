@@ -60,37 +60,40 @@ def sort_trips(list):
     """sorts a list of trips by date, appending trips without dates
 
     This function takes in a list of trips that may or may not contain dates.
-    It breaks the list into to lists, one containing dated trips and the other
-    containing undated trips, using a regex to test each line.
-
-    dateutil's fuzzy parser is then used to return a list of corresponding
-    datetime objects from the dated list. The dated list and datetime list is
-    zipped into a dictionary and sorted by the datetime object keys.
+    It breaks the list into a dictionary of dated trips (keys are the first 
+    date matching in the trip, values are the trips themselves) and a list of
+    undated trips.
+    
+    A new dictionary parsed_dates is then created that is basically the dated
+    dictionary with the keys as datetime objects. Those keys are then sorted,
+    and the corresponding trip values hold on for the ride.
 
     Finally, the now sorted dated trip values are returned with the undated
     trips appended to the end of them.
 
     """
 
-    dated = []
-    undated = []
+    pre_dated = {}
+    pre_undated = []
     sort_dict = {}
 
     for e in list:
-        if re.search(r'(^|\s)[0-9][0-9]?/[0-9][0-9]?($|\s|,|\.|\?|!)', e):
-            dated.append(e)
+        match = re.search(r'(^|\s)[0-9][0-9]?/[0-9][0-9]?($|\s|,|\.|\?|!)', e)
+        if match:
+            pre_dated[match.group()] = e
         else:
-            undated.append(e)
+            pre_undated.append(e)
     
-    # need to deal with parsing errors
-    dates = [parser.parse(x, fuzzy=True) for x in dated]
-    for x in range(len(dates)):
-        sort_dict[dates[x]] = dated[x]
+    parsed_dates = {}
+    for v in pre_dated.keys():
+        parsed_date = parser.parse(v, fuzzy=True)
+        parsed_dates[parsed_date] = pre_dated[v]
 
-    dates.sort(key = lambda x: x.timetuple()[1:3])
-    dated = [sort_dict[x] for x in dates]
+    date_keys = parsed_dates.keys()
+    date_keys.sort(key = lambda x: x.timetuple()[1:3])
+    dated = [parsed_dates[x] for x in date_keys]
 
-    return dated + undated
+    return dated + pre_undated
 
 def add(*args):
     """adds trip and google doc to log
@@ -160,6 +163,8 @@ def edit(*args):
 
     Once a trip entry matching the keyword(s) is found, <old> is replaced with
     <new> and the new trip is returned as a confirmation response.
+    
+    The google doc entry will also be updated to match the edit. At some point.
 
     """
 
@@ -210,8 +215,8 @@ def edit(*args):
             fil.close()
             response = 'i changed that thing and now i\'ve got the trip as "' + \
                                                              edited[:-1] + '"'
-                
-    return response    
+
+    return response
 
 def comp(*args):
     """completes a trip by moving it to the past log
