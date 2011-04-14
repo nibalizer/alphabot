@@ -45,7 +45,7 @@ class TrailBot(irc.IRCClient):
     
     def userJoined(self, user, channel):
         """greetings for user joining each channel"""
-        self.msg(channel, user + voice.user_joined[channel])
+        self.msg(channel, user + random.choice(voice.user_joined[channel]))
 
     def userLeft(self, user, channel):
         self.msg(channel, random.choice(voice.user_left))
