@@ -2,13 +2,13 @@ Trailbot: A snarky IRC bot to keep track of trips for #afk
 
 Abstract:
 
-	Trailbot is a pet project of mine for #afk, a channel for people to plan
-	awesome trips, events, etc., that all take place away from their keyboards.
-	With trailbot, users can add trips to a list, view the upcoming trips, 
-	use shared google docs that are generated on the fly to organize the trips,
-	and after all is said and done complete the trip for viewing in a past log.
-	Support for other features, including editing and testing, is described
-	below under Current Features.
+Trailbot is a pet project of mine for #afk, a channel for people to plan
+awesome trips, events, etc., that all take place away from their keyboards.
+With trailbot, users can add trips to a list, view the upcoming trips, 
+use shared google docs that are generated on the fly to organize the trips,
+and after all is said and done complete the trip for viewing in a past log.
+Support for other features, including editing and testing, is described
+below under Current Features.
 
 Current Features:
 
@@ -28,7 +28,7 @@ Current Features:
 	  confirmations remain in client.py and cmds.py.
 
 	- Bot commands include:
-		
+	  
 		- @add <trip description> : The <trip description> is first appended with
 		  a shortened google doc link that is generated from template.txt, then
 		  written to the open trip log in sorted order.
