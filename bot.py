@@ -9,10 +9,11 @@ connect and join irc channels, then stick around for commands.
 from twisted.internet import reactor
 from client import TrailBotFactory, TrailBotContextFactory
 
+
 class Bot:
     """Bot instance for trailbot
 
-    This defines the instance and connection parameters for trailbot, and 
+    This defines the instance and connection parameters for trailbot, and
     also contains a method to connect via ssl and start the  reactor.
     """
 
@@ -20,15 +21,16 @@ class Bot:
         """trailbot info for connecting and joining channels"""
         self.host = 'irc.cat.pdx.edu'
         self.port = 6697
-        self.chan = ['#afk', '#trailbot']
+        self.chans = ['#afk', '#trailbot']
         self.nick = 'trailbot'
-        
+
     def start(self):
         """connects over ssl to the irc server and starts the reactor"""
         reactor.connectSSL(self.host, self.port,
-                           TrailBotFactory(self.chan, self.nick),
+                           TrailBotFactory(self.chans, self.nick),
                            TrailBotContextFactory())
         reactor.run()
+
 
 def main():
     """initializes trailbot and starts the connection to irc"""

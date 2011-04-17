@@ -12,14 +12,15 @@ this module to minimize the code in cmds.py.
 """
 
 user_joined = {'#trailbot': [", try and break me, please, just enter in all " \
-                 "commands as '@test cmd [args]' and not '@cmd [args]'. that " \
-                   "way i'll use a new set of logs and not the ones for #afk."],
-               '#afk': [", welcome to a channel of wonder and mystery, where " \
-                            "people get together and do stuff outside.",
+                                 "commands as '@test cmd [args]' and not " \
+                                 "'@cmd [args]'. that way i'll use a new " \
+                                 "set of logs and not the ones for #afk."],
+               '#afk': [", welcome to a channel of wonder and mystery, where" \
+                            " people get together and do stuff outside.",
                         ", congratulations! you're now part of an awesome " \
                             "channel where people like to go outside.",
-                        ", it's about time you got here, you've been missing " \
-                            "out on a ton of fun."]}
+                        ", it's about time you got here, you've been missing" \
+                            " out on a ton of fun."]}
 
 user_left = ["looks like we lost another one",
              "guess someone didn't want to be here",
@@ -34,7 +35,8 @@ saw_kick = [", that was a little harsh",
             ", what did they ever do to you?",
             ", you are just a mean person"]
 
-bad_cmd = ["either i don't know that one, or you're doing it wrong. maybe both.",
+bad_cmd = ["either i don't know that one, or you're doing it wrong, but it " \
+               "may be both",
            "not sure what you're trying to do there, don't know that one",
            "something went wrong, but it was on your end"]
 
@@ -42,22 +44,22 @@ no_match = ["couldn't find one for you with that info",
             "no match, you sure you're looking for the right thing?",
             "i found nothing to work with on my end with that info"]
 
-help = {'': 'add | remove | comp | photos | edit | next | list | past | ' \ 
+help = {'': 'add | remove | comp | photos | edit | next | list | past | ' \
             'source | help [command]',
         'add': "add <trip>: adds the trip to the list and appends a link to " \
             "a handy dandy google doc with ride, meeting place, and rsvp info",
-        'remove': "remove <keys>: deletes the trip from the list that matches " \
-            "whatever keyword(s) you give, and don't worry about case",
+        'remove': "remove <keys>: removes a trip from the list that matches" \
+            " whatever keyword(s) you give, and don't worry about case",
         'comp': "comp <keys>: completes a trip and moves it to the past log " \
             "for fond memories",
         'photos': "photos <keys> <link>: appends <link> to the end of the " \
             "trip matching <keys> in the past log",
-        'edit': "edit <keys> s/<old>/<new>/: replaces the old with the new in " \
-            "the trip matching whatever keyword(s). old and new can be any " \
-            "number of words/characters, just escape '/' with '\/' if you're " \
+        'edit': "edit <keys> s/<old>/<new>/: replaces the old with the new " \
+            "in the trip matching the keyword(s). old and new can be any " \
+            "number of words/letters, just escape '/' with '\/' if you're " \
             "editing that.",
-        'next': "next: gives the next planned trip that managed to put a date " \
-            "in the description",
+        'next': "next: gives the next planned trip that managed to have a " \
+            "date in the description",
         'list': "list: sends the complete list of trips to you in a private " \
             "message, because who likes spam?",
         'past': "past: sends a private message with all the past trips " \

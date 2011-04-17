@@ -18,10 +18,11 @@ import gdata.docs.client
 import gdata.acl.data
 import tinyurl
 
-from googlecred import *
+from googlecred import sekret_username, sekret_password
 
 # template used for generated docs
 filename = './template.txt'
+
 
 def add_first(prepend):
     """adds the trip description to the first line of the template"""
@@ -32,6 +33,7 @@ def add_first(prepend):
     f.writelines(old)
     f.close()
 
+
 def remove_first():
     """removes the trip description so the template can be used later"""
     f = open(filename, 'r+')
@@ -41,6 +43,7 @@ def remove_first():
     f.writelines(old)
     f.truncate()
     f.close()
+
 
 def docify(prepend):
     """creates and uploads a shared google doc from the template in filename
@@ -61,36 +64,37 @@ def docify(prepend):
     """
 
     link = ''
-    
     add_first(prepend)
-    
+
     client = gdata.docs.client.DocsClient(source='trailbot')
-    client.ClientLogin(sekret_username, sekret_password, client.source);
+    client.ClientLogin(sekret_username, sekret_password, client.source)
 
     entry = client.Upload(filename, 'trip', content_type='text/plain')
     link = tinyurl.create_one(entry.GetAlternateLink().href)
 
-    feed = client.GetDocList(uri='https://docs.google.com/feeds/default/private/full')
+    feed = client.GetDocList(
+        uri='https://docs.google.com/feeds/default/private/full')
     doc_entry = feed.entry[0]
 
     scope = gdata.acl.data.AclScope(type='default')
     role = gdata.acl.data.AclRole(value='writer')
     acl_entry = gdata.docs.data.Acl(scope=scope, role=role)
-    new_acl = client.Post(acl_entry, doc_entry.GetAclFeedLink().href)
+    client.Post(acl_entry, doc_entry.GetAclFeedLink().href)
 
     remove_first()
 
     return link
 
+
 def dedocify(to_remove):
     """trashes a matching google doc from my account
-    
+
     This method is called when removing a trip with keywords about the trip.
     After logging in to the google account, the DocsList feed is searched for
     files containing the trip keywords, then the matching file is trashed.
 
     A matching trip has already been found when this method is called, so as
-    long as the google doc was generated when the trip was added, a match 
+    long as the google doc was generated when the trip was added, a match
     should be found to trash.
 
     """
@@ -98,10 +102,10 @@ def dedocify(to_remove):
     client = gdata.docs.client.DocsClient(source='trailbot')
     client.ClientLogin(sekret_username, sekret_password, client.source)
 
-    search = to_remove.replace(' ','+')
+    search = to_remove.replace(' ', '+')
     urluri = 'https://docs.google.com/feeds/default/private/full?q=' + search
     feed = client.GetDocList(uri=urluri)
-    
+
     if feed.entry:
         doc_entry = feed.entry[0]
         client.Delete(doc_entry)
