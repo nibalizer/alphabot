@@ -20,29 +20,36 @@ user_joined = {'#trailbot': [", try and break me, please, just enter in all " \
                         ", congratulations! you're now part of an awesome " \
                             "channel where people like to go outside.",
                         ", it's about time you got here, you've been missing" \
-                            " out on a ton of fun."]}
+                            " out on a ton of fun.",
+                        ", now is your chance to gather people together for " \
+                            "whatever afk activity you want to do"]}
 
 user_left = ["looks like we lost another one",
              "guess someone didn't want to be here",
              "awww, i liked them",
-             "oh well, more room in cars"]
+             "oh well, more room in cars",
+             "really? people need to get their priorities straight"]
 
 joined = ["d-_-b probably screwed something up",
           "well that was a nice break",
-          "let's see if i work this time around"]
+          "let's see if i work this time around",
+          "i hope d-_-b didn't mess too much with me"]
 
 saw_kick = [", that was a little harsh",
             ", what did they ever do to you?",
-            ", you are just a mean person"]
+            ", you are just a mean person",
+            ", they're going to remember that, you know that right?"]
 
 bad_cmd = ["either i don't know that one, or you're doing it wrong, but it " \
                "may be both",
            "not sure what you're trying to do there, don't know that one",
-           "something went wrong, but it was on your end"]
+           "something went wrong, but it was on your end",
+           "d-_-b hasn't gotten around to coding that one up yet"]
 
 no_match = ["couldn't find one for you with that info",
             "no match, you sure you're looking for the right thing?",
-            "i found nothing to work with on my end with that info"]
+            "i found nothing to work with on my end with that info",
+            "hm, i've got nothing, try again?"]
 
 help = {'': 'add | remove | comp | photos | edit | next | list | past | ' \
             'source | help [command]',
@@ -68,14 +75,18 @@ help = {'': 'add | remove | comp | photos | edit | next | list | past | ' \
 
 addressed = [", you must be new, you should try '@help'",
              ", appreciate the attention, but all my commands start with '@'",
-             ", well hello, but you won't get far using my nick. try '@help'"]
+             ", well hello, but you won't get far using my nick. try '@help'",
+             ", it's '@cmd [args]', not 'let's talk to trailbot'"]
 
 karma_up = [", you're too kind, far too kind",
             ", good day sir/madam/genderneutraltitle",
             ", may good luck and better alcohol find their way to you",
-            " is a magnificent human being"]
+            " is a magnificent human being",
+            " is now on my 'spare during robot uprising' list",
+            "++ to you too, and may others follow your gracious example"]
 
 karma_down = [", why don't you tell how you really feel, huh?",
               " is a bugger, just thought people should know",
               ", is this how you keep friends?",
-              ", what did i ever do to you?"]
+              ", what did i ever do to you?",
+              "-- back at you, you bugger"]
