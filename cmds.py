@@ -381,12 +381,16 @@ def next(*args):
 
 
 def show(*args):
-    """displays a matching trip to the channel
+    """displays a matching trip to the channel from any log
 
     A simple enough function to return a matching trip to the channel. I
     figure someone will use it. It takes in keywords as arguments, does a
     case insensitive search, then returns a match if found, other it returns
-    a no_match response from voice.py
+    a no_match response from voice.py.
+
+    The current log will first be searched, and if a match isn't found the
+    corresponding past log will be searched. This should add a nice touch to
+    the channel, being able to share the past trips and possibly photos.
 
     """
 
@@ -400,7 +404,18 @@ def show(*args):
 
     match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
-        response = random.choice(voice.no_match)
+        if open_file.name == test_log:
+            p = open(testpast_log, 'r')
+        else:
+            p = open(past_log, 'r')
+        past_trips = get_contents(p)
+        p.close()
+
+        past_match = filter(lambda e: re.search(args, e, re.I), past_trips)
+        if not len(past_match):
+            response = random.choice(voice.no_match)
+        else:
+            response = 'i found "' + past_match[0] + '" for you'
     else:
         response = 'i found "' + match[0] + '" for you'
     return response

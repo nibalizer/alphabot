@@ -67,7 +67,9 @@ help = {'': 'add | remove | comp | photos | edit | next | show | list | past' \
             "editing that.",
         'next': "next: gives the next planned trip that managed to have a " \
             "date in the description",
-        'show': "show <keys>: shows the trip in the log matching <keys>",
+        'show': "show <keys>: shows the trip in the log matching <keys>. a " \
+            "cool thing about this is that both the current and past logs " \
+            "are searched.",
         'list': "list: sends the complete list of trips to you in a private " \
             "message, because who likes spam?",
         'past': "past: sends a private message with all the past trips " \

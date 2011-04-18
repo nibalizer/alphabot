@@ -65,6 +65,11 @@ Current Features:
 		  it makes more sense than the previous implementation of @list, which
 		  did the same thing and sent the rest in a private message.
 
+		- @show <keys> : This simply pulls a trip matching <keys> to the channel
+		  for everyone to see. It first searches the current log, then it goes
+		  to the corresponding past log. This should encourage use of @photos
+		  since folks can show past trips to others in the channel.
+
 		- @list : When given, a private message will be sent to the user with 
 		  all of the currently planned trips. The trips will be sorted based on
 		  date, with the undated trips appended.
