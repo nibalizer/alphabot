@@ -27,7 +27,7 @@ from dateutil import parser
 
 # list of commands currently supported by trailbot
 cmdlist = ['add', 'remove', 'edit', 'comp', 'photos', 'help',
-           'next', 'list', 'past', 'source']
+           'next', 'show', 'list', 'past', 'source']
 
 # files associated with logging trips
 log = './trip.log'
@@ -377,6 +377,32 @@ def next(*args):
     else:
         response = "i got nothing, you people need to get plannin'"
 
+    return response
+
+
+def show(*args):
+    """displays a matching trip to the channel
+
+    A simple enough function to return a matching trip to the channel. I
+    figure someone will use it. It takes in keywords as arguments, does a
+    case insensitive search, then returns a match if found, other it returns
+    a no_match response from voice.py
+
+    """
+
+    response = ''
+    trips = get_contents(open_file)
+
+    if args and not args[0]:
+        return response
+    else:
+        args = args[0]
+
+    match = filter(lambda e: re.search(args, e, re.I), trips)
+    if not len(match):
+        response = random.choice(voice.no_match)
+    else:
+        response = 'i found "' + match[0] + '" for you'
     return response
 
 

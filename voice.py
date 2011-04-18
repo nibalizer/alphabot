@@ -51,14 +51,14 @@ no_match = ["couldn't find one for you with that info",
             "i found nothing to work with on my end with that info",
             "hm, i've got nothing, try again?"]
 
-help = {'': 'add | remove | comp | photos | edit | next | list | past | ' \
-            'source | help [command]',
+help = {'': 'add | remove | comp | photos | edit | next | show | list | past' \
+            ' | source | help [command]',
         'add': "add <trip>: adds the trip to the list and appends a link to " \
             "a handy dandy google doc with ride, meeting place, and rsvp info",
         'remove': "remove <keys>: removes a trip from the list that matches" \
-            " whatever keyword(s) you give, and don't worry about case",
+            " whatever <keys> you give, and don't worry about case",
         'comp': "comp <keys>: completes a trip and moves it to the past log " \
-            "for fond memories",
+            "for fond memories, trips are matched on given <keys>",
         'photos': "photos <keys> <link>: appends <link> to the end of the " \
             "trip matching <keys> in the past log",
         'edit': "edit <keys> s/<old>/<new>/: replaces the old with the new " \
@@ -67,6 +67,7 @@ help = {'': 'add | remove | comp | photos | edit | next | list | past | ' \
             "editing that.",
         'next': "next: gives the next planned trip that managed to have a " \
             "date in the description",
+        'show': "show <keys>: shows the trip in the log matching <keys>",
         'list': "list: sends the complete list of trips to you in a private " \
             "message, because who likes spam?",
         'past': "past: sends a private message with all the past trips " \
