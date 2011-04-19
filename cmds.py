@@ -95,6 +95,71 @@ def sort_trips(to_sort):
     return dated + pre_undated
 
 
+def get_past(f):
+    """gets the matching past trips to the open log
+
+    This is a helper function used a few places to return a list of past trips
+    that correspond to the open log file. It also returns the name for the
+    proper past log for future use.
+
+    """
+    name = ''
+
+    if f.name == test_log:
+        name = testpast_log
+    else:
+        name = past_log
+    p = open(name, 'r+')
+    past_trips = get_contents(p)
+    p.close()
+    return past_trips, name
+
+
+def check_syntax(args, index_key, regex):
+    """general syntax checker for edit and photos commands
+
+    This takes in the string of arguments, start of the second argument, and
+    the form the second argument should be in. The args string is split on the
+    index of the index_key into the first and second arguments, then the form
+    of the second argument is checked against a regex for proper form. All of
+    these new variables: first, second, and form, are return to the calling
+    function.
+
+    """
+
+    cmd_index = 0
+
+    args = args.rsplit()
+    for e in args:
+        if index_key in e:
+            cmd_index = args.index(e)
+            break
+    first = ' '.join(args[:cmd_index])
+    second = ' '.join(args[cmd_index:])
+    form = re.search(regex, second)
+
+    return first, second, form
+
+
+def picket_fence(command):
+    """separates old and new and deals with \/ if it's there
+
+    This helps the edit function by splitting the 's/old/new/' string into old
+    and new strings, also replacing '\/' with '/' if it exists. Both the old
+    and the new are returned.
+
+    """
+
+    old = re.split(r'(?<!\\)/', command)[1]
+    new = re.split(r'(?<!\\)/', command)[2]
+    if '\/' in old:
+        old = old.replace('\/', '/')
+    if '\/' in new:
+        new = new.replace('\/', '/')
+
+    return old, new
+
+
 def add(*args):
     """adds trip and google doc to log
 
@@ -107,8 +172,7 @@ def add(*args):
 
     if args and not args[0]:
         return ''
-    else:
-        args = args[0]
+    args = args[0]
 
     link = docs.docify(args)
     args = args + ' | rsvp/share cars here: ' + link
@@ -139,8 +203,7 @@ def remove(*args):
 
     if args and not args[0]:
         return response
-    else:
-        args = args[0]
+    args = args[0]
 
     match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
@@ -180,32 +243,17 @@ def edit(*args):
 
     response = ''
     trips = get_contents(open_file)
-    cmd_index = 0
 
     if args and not args[0]:
         return response
     args = args[0]
 
-    args = args.rsplit()
-    for e in args:
-        if 's/' in e:
-            cmd_index = args.index(e)
-            break
-    search = ' '.join(args[:cmd_index])
-    command = ' '.join(args[cmd_index:])
+    search, command, form = check_syntax(args, 's/', r'^s/.*/.*/$')
 
-    form = re.search(r'^s/.*/.*/$', command)
     if not form:
         response = "you are doing it wrong. it's '@edit <keys> s/<old>/<new>/'"
     else:
-        # separates <old> and <new> and deals with \/ if it's there
-        old = re.split(r'(?<!\\)/', command)[1]
-        new = re.split(r'(?<!\\)/', command)[2]
-        if '\/' in old:
-            old = old.replace('\/', '/')
-        if '\/' in new:
-            new = new.replace('\/', '/')
-
+        old, new = picket_fence(command)
         match = filter(lambda e: re.search(search, e, re.I), trips)
         if not len(match):
             response = random.choice(voice.no_match)
@@ -245,8 +293,7 @@ def comp(*args):
 
     if args and not args[0]:
         return response
-    else:
-        args = args[0]
+    args = args[0]
 
     match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
@@ -289,28 +336,14 @@ def photos(*args):
     """
 
     response = ''
-    cmd_index = 0
-
-    if open_file.name == test_log:
-        p = open(testpast_log, 'r+')
-    else:
-        p = open(past_log, 'r+')
-    trips = get_contents(p)
+    trips, past_name = get_past(open_file)
 
     if args and not args[0]:
         return response
     args = args[0]
 
-    args = args.rsplit()
-    for e in args:
-        if 'http' in e:
-            cmd_index = args.index(e)
-            break
+    keys, link, form = check_syntax(args, 'http', r'http')
 
-    keys = ' '.join(args[:cmd_index])
-    link = ' '.join(args[cmd_index:])
-
-    form = re.search(r'http', link)
     if not form:
         response = "you are doing it wrong. it's '@photos <keys> <link>'"
     else:
@@ -321,7 +354,7 @@ def photos(*args):
             to_photo = match[0] + '\n'
             link = tinyurl.create_one(link)
 
-            fil = fi.FileInput(p.name, inplace=1)
+            fil = fi.FileInput(past_name, inplace=1)
             for line in fil:
                 if line == to_photo:
                     if 'awesome photos' in line:
@@ -332,7 +365,6 @@ def photos(*args):
                 else:
                     print line,
             fil.close()
-            p.close()
             response = 'that past trip "' + to_photo[:-1] + '" now has a ' \
                 'little link to the photos you added from the trip.'
     return response
@@ -352,8 +384,7 @@ def help(*args):
 
     if not args:
         return response
-    else:
-        args = args[0]
+    args = args[0]
 
     if args and args not in cmdlist:
         response = random.choice(voice.bad_cmd)
@@ -399,18 +430,11 @@ def show(*args):
 
     if args and not args[0]:
         return response
-    else:
-        args = args[0]
+    args = args[0]
 
     match = filter(lambda e: re.search(args, e, re.I), trips)
     if not len(match):
-        if open_file.name == test_log:
-            p = open(testpast_log, 'r')
-        else:
-            p = open(past_log, 'r')
-        past_trips = get_contents(p)
-        p.close()
-
+        past_trips, past_name = get_past(open_file)
         past_match = filter(lambda e: re.search(args, e, re.I), past_trips)
         if not len(past_match):
             response = random.choice(voice.no_match)
@@ -451,16 +475,10 @@ def past(*args):
 
     """
 
-    if open_file.name == test_log:
-        p = open(testpast_log, 'r')
-    else:
-        p = open(past_log, 'r')
-    done = get_contents(p)
-    p.close()
-
-    if done:
-        done.insert(0, "prepare for nostalgia via private message")
-        return done
+    past_trips, past_name = get_past(open_file)
+    if past_trips:
+        past_trips.insert(0, "prepare for nostalgia via private message")
+        return past_trips
     else:
         return "looks like no one's done anything. sad."
 
