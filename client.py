@@ -79,6 +79,7 @@ class TrailBot(irc.IRCClient):
         """greets a new user to the channel"""
         if user not in self.nicks:
             self.msg(channel, user + random.choice(voice.user_joined[channel]))
+            self.nicks.append(user)
             nick_file = open('./nicks.log', 'a+')
             nick_file.write(user + '\n')
             nick_file.close()
