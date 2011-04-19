@@ -90,6 +90,8 @@ Current Features:
 		- When a user is kicked, trailbot scolds the kicker for being harsh.
 
 		- When a user joins the channel, trailbot greets the user appropriately.
+		  Note that once you've been greeted, trailbot remembers your nick so
+		  you won't be greeted again.
 
 		- When a user leaves the channel, trailbot mourns the loss.
 
