@@ -16,13 +16,15 @@ import docs
 import voice
 import random
 
-
 class TrailBot(irc.IRCClient):
     """Main bot interface with IRC happenings
 
     This class hooks into various IRC actions and handles them appropriately.
 
     """
+
+    def __init__(self):
+        self.nicks = []
 
     @property
     def _get_nickname(self):
@@ -34,19 +36,52 @@ class TrailBot(irc.IRCClient):
         irc.IRCClient.connectionMade(self)
 
     def signedOn(self):
-        # once connected, trailbot joins the channels set up in TrailBotFactory
         for chan in self.factory.channels:
             self.join(chan)
 
     def joined(self, channel):
+        """on channel join, trailbot gets everyone's nicks"""
+        self.sendLine('NAMES')
         self.msg(channel, random.choice(voice.joined))
+
+    def irc_RPL_NAMREPLY(self, prefix, params):
+        """unions NAMES and nicks from nicks.log to avoid greeting flappers
+
+        This method is called whenever a reply to NAMES is sent back from the
+        IRC server. It puts those names in a list, stripping the voices/ops
+        characters, then unions that list with a list of saved nicks. This
+        new list is then stored so whenever people join that have already been
+        in the channel, trailbot doesn't greet them again.
+
+        """
+
+        from_split = params[3].split()
+        for e in from_split:
+            if e[0] in '+@':
+                e = e[1:]
+            self.nicks.append(e)
+
+        nick_file = open('./nicks.log', 'r+')
+        from_file = nick_file.readlines()
+        from_file = [l[:-1] for l in from_file]
+
+        self.nicks = list(set(self.nicks) | set(from_file))
+
+        to_write = [e + '\n' for e in self.nicks]
+        nick_file.seek(0, 0)
+        nick_file.writelines(to_write)
+        nick_file.close()
 
     def userKicked(self, kickee, channel, kicker, message):
         self.msg(channel, kicker + random.choice(voice.saw_kick))
 
     def userJoined(self, user, channel):
-        """greetings for user joining each channel"""
-        self.msg(channel, user + random.choice(voice.user_joined[channel]))
+        """greets a new user to the channel"""
+        if user not in self.nicks:
+            self.msg(channel, user + random.choice(voice.user_joined[channel]))
+            nick_file = open('./nicks.log', 'a+')
+            nick_file.write(user + '\n')
+            nick_file.close()
 
     def userLeft(self, user, channel):
         self.msg(channel, random.choice(voice.user_left))
