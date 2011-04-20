@@ -171,7 +171,7 @@ def add(*args):
     """
 
     if args and not args[0]:
-        return ''
+        return random.choice(voice.missing_arg)
     args = args[0]
 
     link = docs.docify(args)
@@ -202,7 +202,7 @@ def remove(*args):
     trips = get_contents(open_file)
 
     if args and not args[0]:
-        return response
+        return random.choice(voice.missing_arg)
     args = args[0]
 
     match = filter(lambda e: re.search(args, e, re.I), trips)
@@ -245,7 +245,7 @@ def edit(*args):
     trips = get_contents(open_file)
 
     if args and not args[0]:
-        return response
+        return random.choice(voice.missing_arg)
     args = args[0]
 
     search, command, form = check_syntax(args, 's/', r'^s/.*/.*/$')
@@ -292,7 +292,7 @@ def comp(*args):
     trips = get_contents(open_file)
 
     if args and not args[0]:
-        return response
+        return random.choice(voice.missing_arg)
     args = args[0]
 
     match = filter(lambda e: re.search(args, e, re.I), trips)
@@ -339,7 +339,7 @@ def photos(*args):
     trips, past_name = get_past(open_file)
 
     if args and not args[0]:
-        return response
+        return random.choice(voice.missing_arg)
     args = args[0]
 
     keys, link, form = check_syntax(args, 'http', r'http')
@@ -429,7 +429,7 @@ def show(*args):
     trips = get_contents(open_file)
 
     if args and not args[0]:
-        return response
+        return random.choice(voice.missing_arg)
     args = args[0]
 
     match = filter(lambda e: re.search(args, e, re.I), trips)

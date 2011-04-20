@@ -44,7 +44,12 @@ bad_cmd = ["either i don't know that one, or you're doing it wrong, but it " \
                "may be both",
            "not sure what you're trying to do there, don't know that one",
            "something went wrong, but it was on your end",
-           "d-_-b hasn't gotten around to coding that one up yet"]
+           "d-_-b hasn't gotten around to coding that one up yet",
+           "sorry, don't know that one, but patches are welcome"]
+
+missing_arg = ["looks like you're missing an argument, try '@help [cmd]'",
+               "almost there, need a little more info in your command",
+               "well, i understand part of that, but you're missing pieces"]
 
 no_match = ["couldn't find one for you with that info",
             "no match, you sure you're looking for the right thing?",
@@ -79,12 +84,13 @@ help = {'': 'add | remove | comp | photos | edit | next | show | list | past' \
 addressed = [", you must be new, you should try '@help'",
              ", appreciate the attention, but all my commands start with '@'",
              ", well hello, but you won't get far using my nick. try '@help'",
-             ", it's '@cmd [args]', not 'let's talk to trailbot'"]
+             ", it's '@cmd [args]', not 'let's talk to trailbot'",
+             ", i can talk to you too, but that doesn't mean you'll work"]
 
 karma_up = [", you're too kind, far too kind",
             ", good day sir/madam/genderneutraltitle",
             ", may good luck and better alcohol find their way to you",
-            " is a magnificent human being",
+            "++ is a magnificent human being",
             " is now on my 'spare during robot uprising' list",
             "++ to you too, and may others follow your gracious example"]
 
