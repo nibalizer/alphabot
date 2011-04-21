@@ -109,6 +109,10 @@ Ideas/Hopes for Future:
 	- Pull common, repetitive logic out of commands/methods and replace with
 	  more generic method calls.
 
+	- Manage time nicks have been gone, so if a user has been gone for a given
+	  period of time trailbot will greet them. Also keep a separate nick list
+	  each channel.
+
 	- Update google doc trip description when @edit is done.
 
 	- Increase overall snarky attitude, find more ways to comment on things.
