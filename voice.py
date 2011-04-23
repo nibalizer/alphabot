@@ -99,3 +99,6 @@ karma_down = [", why don't you tell how you really feel, huh?",
               ", is this how you keep friends?",
               ", what did i ever do to you?",
               "-- back at you, you bugger"]
+
+mode_set = ["thanks for the hat",
+            "sweet, now i'm official"]

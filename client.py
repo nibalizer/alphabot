@@ -72,6 +72,14 @@ class TrailBot(irc.IRCClient):
         nick_file.writelines(to_write)
         nick_file.close()
 
+    def irc_NICK(self, prefix, params):
+        """adds the new nick to the list of nicks not to greet"""
+        if params:
+            self.nicks.append(params[0])
+            nick_file = open('./nicks.log', 'a+')
+            nick_file.write(params[0] + '\n')
+            nick_file.close()
+
     def userKicked(self, kickee, channel, kicker, message):
         self.msg(channel, kicker + random.choice(voice.saw_kick))
 
@@ -117,6 +125,11 @@ class TrailBot(irc.IRCClient):
                     for trip in reply[1:]:
                         self.msg(user, trip)
 
+    def modeChanged(self, user, channel, set, modes, args):
+        """responds is trailbot is given a mode"""
+        if set and user == self.nickname:
+            random.choice(voice.mode_set)
+
 
 class TrailBotFactory(protocol.ClientFactory):
     """Subclass of ClientFactory for trailbot protocol"""
@@ -128,12 +141,10 @@ class TrailBotFactory(protocol.ClientFactory):
         self.nickname = nickname
 
     def clientConnectionLost(self, connector, reason):
-        # if the connection is lost, try to reconnect
         print 'connection lost',
         connector.connect()
 
     def clientConnectionFailed(self, connector, reason):
-        # give up
         print 'connection failed',
 
 
