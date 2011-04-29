@@ -30,10 +30,10 @@ user_left = ["looks like we lost another one",
              "oh well, more room in cars",
              "really? people need to get their priorities straight"]
 
-joined = ["d-_-b probably screwed something up",
+joined = ["nibalizer probably screwed something up",
           "well that was a nice break",
           "let's see if i work this time around",
-          "i hope d-_-b didn't mess too much with me"]
+          "i hope nibalizer didn't mess too much with me"]
 
 saw_kick = [", that was a little harsh",
             ", what did they ever do to you?",
@@ -44,7 +44,7 @@ bad_cmd = ["either i don't know that one, or you're doing it wrong, but it " \
                "may be both",
            "not sure what you're trying to do there, don't know that one",
            "something went wrong, but it was on your end",
-           "d-_-b hasn't gotten around to coding that one up yet",
+           "nibalizer hasn't gotten around to coding that one up yet",
            "sorry, don't know that one, but patches are welcome"]
 
 missing_arg = ["looks like you're missing an argument, try '@help [cmd]'",

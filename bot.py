@@ -21,8 +21,8 @@ class Bot:
         """trailbot info for connecting and joining channels"""
         self.host = 'irc.cat.pdx.edu'
         self.port = 6697
-        self.chans = ['#afk', '#trailbot']
-        self.nick = 'trailbot'
+        self.chans = ['#alphabot', '#trailbot']
+        self.nick = 'alphabot'
 
     def start(self):
         """connects over ssl to the irc server and starts the reactor"""

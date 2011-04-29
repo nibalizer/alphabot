@@ -12,7 +12,6 @@ from twisted.python import rebuild
 
 import types
 import cmds
-import docs
 import voice
 import random
 
@@ -76,6 +75,7 @@ class TrailBot(irc.IRCClient):
         """adds the new nick to the list of nicks not to greet"""
         if params:
             self.nicks.append(params[0])
+
             nick_file = open('./nicks.log', 'a+')
             nick_file.write(params[0] + '\n')
             nick_file.close()
@@ -109,9 +109,8 @@ class TrailBot(irc.IRCClient):
         """
         user = user.split('!', 1)[0]
 
-        if msg == '@reload':
+        if msg == '%reload':
             rebuild.rebuild(cmds)
-            rebuild.rebuild(docs)
             rebuild.rebuild(voice)
             self.msg(channel, 'reloaded and ready to go')
         else:

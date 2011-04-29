@@ -18,16 +18,16 @@ bits to keep things interesting.
 
 import re
 import fileinput as fi
-import docs
 import voice
 import random
-import tinyurl
+import wolfram 
 
 from dateutil import parser
 
 # list of commands currently supported by trailbot
 cmdlist = ['add', 'remove', 'edit', 'comp', 'photos', 'help',
-           'next', 'show', 'list', 'past', 'source']
+           'next', 'show', 'list', 'past', 'source',
+           'alpha', 'indef', 'testing', 'fourier']
 
 # files associated with logging trips
 log = './trip.log'
@@ -37,7 +37,23 @@ testpast_log = './testpast.log'
 
 # global file descriptor for working with the open log
 open_file = None
+def testing(*msg):
+    return "seriously?"
 
+def fourier(msg):
+    u = wolfram.makequerry('fourier', msg)
+    response = u.encode('ascii', 'ignore')
+    return response
+
+def alpha(msg):
+    u = wolfram.makequerry('raw', msg)
+    response = u.encode('ascii', 'ignore')
+    return response
+
+def indef(msg):
+    u = alpha.makequerry('indef', msg)
+    response = u.encode('ascii', 'ignore')
+    return response
 
 def get_contents(f):
     """returns content of file f in list of lines
@@ -54,6 +70,7 @@ def get_contents(f):
     lines = [l[:-1] for l in lines]
 
     return lines
+
 
 
 def sort_trips(to_sort):
@@ -160,214 +177,12 @@ def picket_fence(command):
     return old, new
 
 
-def add(*args):
-    """adds trip and google doc to log
-
-    This checks for something to add, gets a link from a new google doc made
-    in docs.docify(), and appends the info to the trip. The function then reads
-    in the current file and inserts the new trip in sorted order, then writes
-    the file back out in order. A confirmation response is returned.
-
-    """
-
-    if args and not args[0]:
-        return random.choice(voice.missing_arg)
-    args = args[0]
-
-    link = docs.docify(args)
-    args = args + ' | rsvp/share cars here: ' + link
-
-    lines = get_contents(open_file) + [args]
-    lines = sort_trips(lines)
-    lines = [l + '\n' for l in lines]
-
-    if open_file.tell():
-        open_file.seek(0, 0)
-    open_file.writelines(lines)
-
-    return '"' + args + '" is now in the logs for viewing pleasure.'
 
 
-def remove(*args):
-    """removes a trip and it's doc that matches the args from the log
-
-    This function does a case insensitive search for a matching trip in the log
-    on keywords found in args. If a match is made, the google doc for that trip
-    is trashed and the trip entry in the log is deleted. The function returns a
-    confirmation with the trip removed.
-
-    """
-
-    response = ''
-    trips = get_contents(open_file)
-
-    if args and not args[0]:
-        return random.choice(voice.missing_arg)
-    args = args[0]
-
-    match = filter(lambda e: re.search(args, e, re.I), trips)
-    if not len(match):
-        response = random.choice(voice.no_match)
-    else:
-        docs.dedocify(args)
-        to_del = match[0] + '\n'
-        fil = fi.FileInput(open_file.name, inplace=1)
-        for line in fil:
-            if line != to_del:
-                print line,
-        response = 'i got rid of "' + match[0] + '"'
-        fil.close()
-    return response
 
 
-def edit(*args):
-    """edits a trip entry, using s/<old>/<new>/
-
-    This takes a string of any number of keywords followed by the sequence
-    's/<old>/<new>/'. It finds the trip matching the keyword(s) and replaces
-    <old> with <new>, which can both be any number of words/characters.
-
-    Note that <old> and <new> args containing '/' need to be escaped as '\/'
-    to parse correctly.
-
-    The function splits up the string to keywords and 's/<old>/<new>/', checks
-    the format of 's/<old>/<new>/', replaces '\/' with '/' if they're used,
-    then starts to search for the matching trip.
-
-    Once a trip entry matching the keyword(s) is found, <old> is replaced with
-    <new> and the new trip is returned as a confirmation response.
-
-    The google doc entry will also be updated to match the edit. At some point.
-
-    """
-
-    response = ''
-    trips = get_contents(open_file)
-
-    if args and not args[0]:
-        return random.choice(voice.missing_arg)
-    args = args[0]
-
-    search, command, form = check_syntax(args, 's/', r'^s/.*/.*/$')
-
-    if not form:
-        response = "you are doing it wrong. it's '@edit <keys> s/<old>/<new>/'"
-    else:
-        old, new = picket_fence(command)
-        match = filter(lambda e: re.search(search, e, re.I), trips)
-        if not len(match):
-            response = random.choice(voice.no_match)
-        elif old not in match[0]:
-            response = random.choice(voice.no_match)
-        else:
-            to_edit = match[0] + '\n'
-            edited = ''
-            fil = fi.FileInput(open_file.name, inplace=1)
-            for line in fil:
-                if line == to_edit:
-                    edited = line.replace(old, new, 1)
-                    print edited,
-                else:
-                    print line,
-            fil.close()
-            response = 'i changed that thing and now i\'ve got the trip as "' \
-                + edited[:-1] + '"'
-
-    return response
 
 
-def comp(*args):
-    """completes a trip by moving it to the past log
-
-    This completes a recent trip by finding the entry in the log and moving it
-    to the past log for viewing with past(). It includes logic when editing the
-    files to move the trip to the test log or actual log depending on the
-    command issued.
-
-    A confirmation message with the trip is returned when successful.
-
-    """
-
-    response = ''
-    trips = get_contents(open_file)
-
-    if args and not args[0]:
-        return random.choice(voice.missing_arg)
-    args = args[0]
-
-    match = filter(lambda e: re.search(args, e, re.I), trips)
-    if not len(match):
-        response = random.choice(voice.no_match)
-    else:
-        docs.dedocify(args)
-        to_comp = match[0] + '\n'
-        fil = fi.FileInput(open_file.name, inplace=1)
-        for line in fil:
-            if line == to_comp:
-                if open_file.name == test_log:
-                    plog = open(testpast_log, 'a+')
-                else:
-                    plog = open(past_log, 'a+')
-
-                # removes the google doc info before writing to the past log
-                to_comp = to_comp[:to_comp.index(' | rsvp/share')] + '\n'
-                plog.write(to_comp)
-                plog.close()
-            else:
-                print line,
-        fil.close()
-        response = '"' + to_comp[:-1] + '" was fun, is done, and can be ' \
-            'seen in the past log'
-    return response
-
-
-def photos(*args):
-    """add a link to photos from a trip on the end of a past trip
-
-    This function is similar to edit in how it handles syntax. The arguments
-    should be a number of keywords for finding a matching past trip followed by
-    a link to whatever photos people have. The args are split, then the link is
-    checked if it is indeed a link.
-
-    Once the syntax is checked, a matching trip for the keywords is found or a
-    "no match" response is given to the channel. If a match is found, the line
-    in the file is appended with the link and a confirmation is returned.
-
-    """
-
-    response = ''
-    trips, past_name = get_past(open_file)
-
-    if args and not args[0]:
-        return random.choice(voice.missing_arg)
-    args = args[0]
-
-    keys, link, form = check_syntax(args, 'http', r'http')
-
-    if not form:
-        response = "you are doing it wrong. it's '@photos <keys> <link>'"
-    else:
-        match = filter(lambda e: re.search(keys, e, re.I), trips)
-        if not len(match):
-            response = random.choice(voice.no_match)
-        else:
-            to_photo = match[0] + '\n'
-            link = tinyurl.create_one(link)
-
-            fil = fi.FileInput(past_name, inplace=1)
-            for line in fil:
-                if line == to_photo:
-                    if 'awesome photos' in line:
-                        print line[:-1] + ', ' + link + '\n',
-                    else:
-                        print line[:-1] + " | awesome photos can be found " \
-                                                     "here: " + link + '\n',
-                else:
-                    print line,
-            fil.close()
-            response = 'that past trip "' + to_photo[:-1] + '" now has a ' \
-                'little link to the photos you added from the trip.'
-    return response
 
 
 def help(*args):
@@ -392,23 +207,6 @@ def help(*args):
         response = voice.help[args]
     return response
 
-
-def next(*args):
-    """replies with the next planned trip to the channel
-
-    This gets the list of trips from the current log file and returns the first
-    trip in the sorted list to the channel, which is effectively the next one.
-
-    """
-    response = ''
-    to_list = get_contents(open_file)
-
-    if to_list:
-        response = to_list[0]
-    else:
-        response = "i got nothing, you people need to get plannin'"
-
-    return response
 
 
 def show(*args):
@@ -511,7 +309,7 @@ def dispatch(user, msg):
     reply = None
     global open_file
 
-    if msg[0] == '@':
+    if msg[0] == '%':
         msg = msg[1:]
         cmd = msg.rsplit()[0]
         args = ' '.join(msg.rsplit()[1:])
