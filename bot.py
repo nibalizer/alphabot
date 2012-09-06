@@ -21,7 +21,7 @@ class Bot:
         """trailbot info for connecting and joining channels"""
         self.host = 'irc.cat.pdx.edu'
         self.port = 6697
-        self.chans = ['#alphabot', '#trailbot']
+        self.chans = ['#alphabot']
         self.nick = 'alphabot'
 
     def start(self):

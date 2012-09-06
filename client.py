@@ -80,20 +80,6 @@ class TrailBot(irc.IRCClient):
             nick_file.write(params[0] + '\n')
             nick_file.close()
 
-    def userKicked(self, kickee, channel, kicker, message):
-        self.msg(channel, kicker + random.choice(voice.saw_kick))
-
-    def userJoined(self, user, channel):
-        """greets a new user to the channel"""
-        if user not in self.nicks:
-            self.msg(channel, user + random.choice(voice.user_joined[channel]))
-            self.nicks.append(user)
-            nick_file = open('./nicks.log', 'a+')
-            nick_file.write(user + '\n')
-            nick_file.close()
-
-    def userLeft(self, user, channel):
-        self.msg(channel, random.choice(voice.user_left))
 
     def privmsg(self, user, channel, msg):
         """Handles user messages from channels
